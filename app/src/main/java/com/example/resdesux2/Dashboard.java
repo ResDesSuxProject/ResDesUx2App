@@ -2,11 +2,17 @@ package com.example.resdesux2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 
-public class Dashboard extends AppCompatActivity {
+import com.example.resdesux2.Services.ServerService;
+
+public class Dashboard extends BoundActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +23,7 @@ public class Dashboard extends AppCompatActivity {
 
 
     }
+
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {

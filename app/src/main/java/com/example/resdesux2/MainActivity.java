@@ -2,11 +2,19 @@ package com.example.resdesux2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.resdesux2.Services.ServerService;
+
+public class MainActivity extends BoundActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // The server service is created if it wasn't before
+        if (!isBound) {
+            Intent intent = new Intent(this, ServerService.class);
+            startService(intent);
+            bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        }
+    }
 
     // hieronder is oud
 //    public void sendMessage(View view) {
