@@ -51,7 +51,6 @@ public class ServerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand: ");
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
             new ConnectTask(IP_ADDRESS, SERVER_PORT).execute(this);
@@ -152,7 +151,9 @@ public class ServerService extends Service {
     }
 
     public void getUsers(ChangeListener<ArrayList<User>> listener) {
-
+        userListeners.add(listener);
+        Thread thread = new WriteToServer("get_users: 0", writer, mainThreadHandler);
+        thread.start();
     }
 
     public void reconnect(){
