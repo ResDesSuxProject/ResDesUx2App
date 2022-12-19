@@ -20,6 +20,7 @@ public class BoundActivity extends AppCompatActivity {
             ServerService.ServiceBinder binder = (ServerService.ServiceBinder) service;
             serverService = binder.getService();
             isBound = true;
+            onBound();
         }
 
         @Override
@@ -33,7 +34,21 @@ public class BoundActivity extends AppCompatActivity {
         super.onStart();
 
         Intent intent = new Intent(this, ServerService.class);
+
+        // The server service is created if it wasn't before
+        if (!isBound) {
+            startService(intent);
+        }
+
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    protected void onConnected(boolean connected) {
+
+    }
+
+    private void onBound() {
+        serverService.setConnectionListener(this::onConnected);
     }
 
     @Override

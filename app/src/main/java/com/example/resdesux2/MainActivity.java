@@ -1,11 +1,13 @@
 package com.example.resdesux2;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.resdesux2.Services.ServerService;
+import com.example.resdesux2.Models.ChangeListener;
 
 public class MainActivity extends BoundActivity {
 
@@ -39,16 +41,21 @@ public class MainActivity extends BoundActivity {
     };
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onConnected(boolean connected) {
+        super.onConnected(connected);
 
-        // The server service is created if it wasn't before
-        if (!isBound) {
-            Intent intent = new Intent(this, ServerService.class);
-            startService(intent);
-            bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        }
+        // Example of how you can listen to a score change
+        serverService.setScoreListener(this::onScoreChange);
     }
+
+    public void onScoreChange(double value) {
+        Toast.makeText(this, "Heyo, score:" + value, Toast.LENGTH_SHORT).show();
+        Log.i("MainActivity", "onScoreChange: " + value);
+        TextView textView = (TextView) findViewById(R.id.scoreView);
+        textView.setText(String.format("Score: %s", value));
+    }
+
+
 
     // hieronder is oud
 //    public void sendMessage(View view) {
