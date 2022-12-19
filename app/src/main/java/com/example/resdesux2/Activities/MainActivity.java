@@ -1,4 +1,4 @@
-package com.example.resdesux2;
+package com.example.resdesux2.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.resdesux2.Models.ChangeListener;
+import com.example.resdesux2.BoundActivity;
+import com.example.resdesux2.R;
 
 public class MainActivity extends BoundActivity {
 
@@ -29,11 +30,11 @@ public class MainActivity extends BoundActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.button_friends:
-                    Intent intent = new Intent(MainActivity.this, Dashboard.class);
+                    Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
                     startActivity(intent);
                     break;
                 case R.id.button_calendar:
-                    Intent intent_calendar = new Intent(MainActivity.this, calendar.class);
+                    Intent intent_calendar = new Intent(MainActivity.this, CalendarActivity.class);
                     startActivity(intent_calendar);
                     break;
             }

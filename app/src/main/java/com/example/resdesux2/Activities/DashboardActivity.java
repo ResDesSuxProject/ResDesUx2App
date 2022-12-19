@@ -1,18 +1,13 @@
-package com.example.resdesux2;
+package com.example.resdesux2.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.View;
 
-import com.example.resdesux2.Services.ServerService;
+import com.example.resdesux2.BoundActivity;
+import com.example.resdesux2.R;
 
-public class Dashboard extends BoundActivity {
+public class DashboardActivity extends BoundActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +24,7 @@ public class Dashboard extends BoundActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.button_friends_back_to_main:
-                    Intent intent_friends_back_to_main = new Intent(Dashboard.this, MainActivity.class);
+                    Intent intent_friends_back_to_main = new Intent(DashboardActivity.this, MainActivity.class);
                     startActivity(intent_friends_back_to_main);
                     break;
             }

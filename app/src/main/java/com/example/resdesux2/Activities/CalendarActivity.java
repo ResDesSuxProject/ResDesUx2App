@@ -1,10 +1,12 @@
-package com.example.resdesux2;
+package com.example.resdesux2.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class calendar extends AppCompatActivity {
+import com.example.resdesux2.R;
+
+public class CalendarActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
