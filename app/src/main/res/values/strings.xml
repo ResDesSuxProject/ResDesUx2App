@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ResDesUx2</string>
     <string name="back_to_the_my_score">Back to the my score</string>
+    <string name="user_status_txt">User status</string>
 </resources>

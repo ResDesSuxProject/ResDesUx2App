@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.resdesux2.BoundActivity;
+import com.example.resdesux2.HelperClasses.UserListAdaptor;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 
@@ -21,8 +22,6 @@ public class DashboardActivity extends BoundActivity {
         setContentView(R.layout.activity_dashboard);
 
         findViewById(R.id.button_friends_back_to_main).setOnClickListener(this::goBack);  //VAN main NAAR friends
-
-
     }
 
     @Override
@@ -33,16 +32,15 @@ public class DashboardActivity extends BoundActivity {
     }
 
     private void populateList(ArrayList<User> users) {
-        Log.i("Yess", "populateList: " + users.toString());
-
         // Create an ArrayAdapter to manage the data for the ListView
         ArrayAdapter<User> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);
+        UserListAdaptor userListAdaptor = new UserListAdaptor(this, android.R.layout.simple_list_item_1, users);
 
         // Find the ListView widget in the layout
         ListView listView = findViewById(R.id.users_list);
 
         // Set the ArrayAdapter as the adapter for the ListView
-        listView.setAdapter(adapter);
+        listView.setAdapter(userListAdaptor);
     }
 
     private void goBack(View view) {
