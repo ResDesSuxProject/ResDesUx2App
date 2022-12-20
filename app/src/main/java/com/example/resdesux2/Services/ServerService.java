@@ -20,10 +20,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "130.89.183.254"; //  "10.0.2.2"; //192.168.31.62";
+    static final String IP_ADDRESS = "192.168.31.62"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
@@ -53,33 +52,36 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
-            new ConnectTask(IP_ADDRESS, SERVER_PORT).execute(this);
-            // Create a new Handler on the UI thread
+            new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
+            // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
-
 
             isRunning = true;
         }
-
         return START_STICKY;
     }
 
     public void connectToServer(Socket socket) throws IOException {
+        // Store the socket so it can latter be closed
+        this.socket = socket;
+
+        // create a reader and writer to communicate with the server
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-        // Send a message to the server
-        writer.write("name: Mobile client " + socket.getLocalSocketAddress().toString().replace("/", "").replace(":", ";") + "\n");
-        writer.write("listen_score: 0\n");
-        writer.flush();
-
-
-        Log.i(TAG, "connectToServer: Connected to server " + socket.getRemoteSocketAddress());
-
-        listenerThread = new ServerListenerThread("Test", mainThreadHandler, reader, writer);
+        // Setup the thread to listen to the server
+        listenerThread = new ServerListenerThread("Server listener", mainThreadHandler, reader, writer);
         listenerThread.start();
         isConnected = true;
 
+        // Send a message to the server which includes name and a listener for the score
+        String request = "name: Mobile client " + socket.getLocalSocketAddress().toString().replace("/", "").replace(":", ";") + "\n";
+        request += "listen_score: 0\n";
+        new WriteToServer(request, writer, mainThreadHandler).start();
+
+        Log.i(TAG, "connectToServer: Connected to server " + socket.getRemoteSocketAddress());
+
+        // Once connected let the listener know that a connection has been established
         if (connectedListener != null) {
             connectedListener.onChange(true);
         }
@@ -87,7 +89,9 @@ public class ServerService extends Service {
 
     private boolean handleMessage(Message message) {
         Log.i(TAG, "handleMessage: " + message.getData());
+
         switch (message.what) {
+            // If the message is about data received from the server
             case MESSAGE_FROM_SERVER:
                 try {
                     processIncoming(message.getData().getString("line"));
@@ -95,19 +99,24 @@ public class ServerService extends Service {
                     throw new RuntimeException(e);
                 }
                 break;
+
+            // If the server has been disconnected
             case MESSAGE_DISCONNECTED:
                 reconnect();
             break;
         }
         return true;
     }
+
     public void processIncoming(String line) throws IOException {
         Log.i(TAG, "processIncoming: " + line);
 
+        // First find the command and prepare it
         String[] arguments = line.split(":");
         if (arguments.length == 0) return;
         String command = arguments[0].toLowerCase().trim();
 
+        // Then prepare the sub command
         if (arguments.length >= 2)
             arguments[1] = arguments[1].trim();
 
@@ -163,8 +172,9 @@ public class ServerService extends Service {
                 socket.close();
             } catch (IOException ignored) {}
         }
+
         isConnected = false;
-        new ConnectTask(IP_ADDRESS, 9999).execute(this);
+        new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
         isRunning = true;
 
         Log.i(TAG, "reconnecting..");

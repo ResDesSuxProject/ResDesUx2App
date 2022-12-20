@@ -1,39 +1,43 @@
 package com.example.resdesux2.Services;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import javax.xml.transform.Result;
+public class ConnectTask extends AsyncTask<Void, Void, Socket> {
+    private static final String TAG = "Connect Task";
+    private final String serverAddress;
+    private final int serverPort;
+    private final ServerService serverService;
 
-public class ConnectTask extends AsyncTask<ServerService, Void, Void> {
-    private String mServerAddress;
-    private int mServerPort;
-
-    public ConnectTask(String serverAddress, int serverPort) {
-        mServerAddress = serverAddress;
-        mServerPort = serverPort;
+    public ConnectTask(String serverAddress, int serverPort, ServerService serverService) {
+        this.serverAddress = serverAddress;
+        this.serverPort = serverPort;
+        this.serverService = serverService;
     }
 
-    protected void onPostExecute(Result result) {
+    protected void onPostExecute(Socket socket) {
+        try {
+            serverService.connectToServer(socket);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
-    protected Void doInBackground(ServerService... serverServices) {
-        try {
-            // Create a socket and connect to the server
-            Socket socket = new Socket(mServerAddress, mServerPort);
-            serverServices[0].connectToServer(socket);
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected Socket doInBackground(Void... voids) {
+        while(true) {
+            try {
+                Log.i(TAG, "doInBackground: Connecting...");
+                // Create a socket and connect to the server
+                return new Socket(serverAddress, serverPort);
+            } catch (IOException e) {
+                Log.e(TAG, "doInBackground: Can't connect to server, reconnecting...");
+                Log.e(TAG, e.toString());
+            }
         }
-
-        return null;
     }
 }
