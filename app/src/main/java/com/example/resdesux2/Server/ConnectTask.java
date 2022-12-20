@@ -31,7 +31,6 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
     protected Socket doInBackground(Void... voids) {
         while(true) {
             try {
-                Log.i(TAG, "doInBackground: Connecting...");
                 // Create a socket and connect to the server
                 return new Socket(serverAddress, serverPort);
             } catch (IOException e) {

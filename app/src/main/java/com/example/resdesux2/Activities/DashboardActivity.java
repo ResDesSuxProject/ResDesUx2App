@@ -27,7 +27,8 @@ public class DashboardActivity extends BoundActivity {
     @Override
     protected void onConnected(boolean connected) {
         super.onConnected(connected);
-        Log.i("YES", "onConnected: Done");
+
+        // Once the server has been connected request the users
         serverService.getUsers(this::populateList);
     }
 

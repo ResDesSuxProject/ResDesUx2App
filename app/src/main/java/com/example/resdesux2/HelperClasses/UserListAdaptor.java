@@ -24,26 +24,27 @@ public class UserListAdaptor extends ArrayAdapter<User> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // convertView which is recyclable view
+        // ConvertView which is recyclable view, which is the view before it was scrolled,
+        // So checking if it already inflated then before inflating it makes it faster
         View currentItemView = convertView;
   
-        // of the recyclable view is null then inflate the custom layout for the same
+        // If the recyclable view is null then inflate the custom layout for the same
         if (currentItemView == null) {
             currentItemView = LayoutInflater.from(getContext()).inflate(R.layout.user_list_item, parent, false);
         }
   
-        // get the position of the view from the ArrayAdapter
+        // Get the position of the view from the ArrayAdapter
         User currentUser = getItem(position);
   
-        // then according to the position of the view assign the desired TextView 1 for the same
+        // Then get the user name and fill it in.
         TextView textViewUserName = currentItemView.findViewById(R.id.textViewUserName);
         textViewUserName.setText(currentUser.getUserName());
   
-        // then according to the position of the view assign the desired TextView 2 for the same
+        // And the same for the score
         TextView textViewUserScore = currentItemView.findViewById(R.id.textViewUserScore);
         textViewUserScore.setText(String.format(Locale.getDefault(), "Score: %.2f", currentUser.getScore()));
   
-        // then return the recyclable view
+        // Then return the recyclable view
         return currentItemView;
     }
 }

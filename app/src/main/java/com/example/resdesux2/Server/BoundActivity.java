@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class BoundActivity extends AppCompatActivity {
     protected ServerService serverService;
     protected boolean isBound;
+    protected boolean isConnected;
 
     /**
      * This instantiate a connection with the service and handles that it connects.
@@ -37,6 +38,7 @@ public class BoundActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        isConnected = false;
 
         Intent intent = new Intent(this, ServerService.class);
 
@@ -54,7 +56,7 @@ public class BoundActivity extends AppCompatActivity {
      * @param connected This parameter can be neglected as it should always be true.
      */
     protected void onConnected(boolean connected) {
-
+        isConnected = true;
     }
 
     /**

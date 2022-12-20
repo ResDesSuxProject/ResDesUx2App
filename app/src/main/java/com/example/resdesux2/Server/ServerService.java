@@ -61,6 +61,13 @@ public class ServerService extends Service {
         return START_STICKY;
     }
 
+    /**
+     * Connect to server is called form ConnectTask when the server is (re)connected
+     * @param socket The socket that connects to the server
+     * @throws IOException If an I/O error occurs when creating the input stream,
+     *                      the socket is closed, the socket is not connected,
+     *                      or the socket input has been shutdown using shutdownInput()
+     */
     public void connectToServer(Socket socket) throws IOException {
         // Store the socket so it can latter be closed
         this.socket = socket;
@@ -87,6 +94,12 @@ public class ServerService extends Service {
         }
     }
 
+    /**
+     * This function gets triggered once a thread talks to the mainThreadHandler,
+     * And processes the message and send it through to the right method.
+     * @param message The message from the handler
+     * @return always true
+     */
     private boolean handleMessage(Message message) {
         Log.i(TAG, "handleMessage: " + message.getData());
 
@@ -108,6 +121,14 @@ public class ServerService extends Service {
         return true;
     }
 
+    /**
+     * Processes the incoming data from the server.
+     * Is called from a message send from ServerListenerThread
+     * @param line the incoming command and arguments from the server
+     * @throws IOException If an I/O error occurs when creating the input stream,
+     *                      the socket is closed, the socket is not connected,
+     *                      or the socket input has been shutdown using shutdownInput()
+     */
     public void processIncoming(String line) throws IOException {
         Log.i(TAG, "processIncoming: " + line);
 
@@ -125,9 +146,6 @@ public class ServerService extends Service {
                 score = Double.parseDouble(arguments[1]);
                 if (scoreListener != null)
                     scoreListener.onChange(score);
-//                for (ChangeListener<Double> changeListener : scoreListeners) {
-//                    changeListener.onChange(score);
-//                }
                 break;
             case "users":
                 String[] incomingUsers = arguments[1].split("\\|");
@@ -138,7 +156,7 @@ public class ServerService extends Service {
                     users.add(new User(Integer.parseInt(userData[0]), userData[1], Double.parseDouble(userData[2]), Integer.parseInt(userData[3])));
                 }
 
-                // update all the listeners and then delete them
+                // Update all the listeners and then delete them
                 for (ChangeListener<ArrayList<User>> listener : userListeners) {
                     listener.onChange(users);
                 }
@@ -147,25 +165,43 @@ public class ServerService extends Service {
         }
     }
 
-    /* ---------- Listeners ---------- */
+    /* ------------------------------ Listeners ------------------------------ */
+    /**
+     * Set a listener that gets triggered once the server has been connected to this service
+     * @param listener a listener which has an onChange method taking a boolean.
+     *                  Or a method that takes an boolean and then write this::METHOD_NAME
+     */
     public void setConnectionListener(ChangeListener<Boolean> listener) {
         if (isConnected) listener.onChange(true);
         else connectedListener = listener;
     }
 
+    /**
+     * Set a listener that gets triggered constantly when the score of the user with ID 0 changes
+     * @param listener a listener which has an onChange method taking a Double.
+     *                  Or a method that takes an Double and then write this::METHOD_NAME
+     */
     public void setScoreListener(ChangeListener<Double> listener) {
         scoreListener = listener;
         if (score != -1)
             scoreListener.onChange(score);
     }
 
+    /**
+     * Request users from the server and Set a listener that gets triggered once the users are received
+     * @param listener a listener which has an onChange method taking a ArrayList of Users.
+     *                  Or a method that takes an <ArrayList<User>> and then write this::METHOD_NAME
+     */
     public void getUsers(ChangeListener<ArrayList<User>> listener) {
         userListeners.add(listener);
         Thread thread = new WriteToServer("get_users: 0", writer, mainThreadHandler);
         thread.start();
     }
 
-    public void reconnect(){
+    /**
+     * Reconnects to the server and stops the listenerThread
+     */
+    private void reconnect(){
         listenerThread.interrupt();
         if (socket != null) {
             try {
