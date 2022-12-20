@@ -5,9 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.resdesux2.BoundActivity;
+import com.example.resdesux2.Server.BoundActivity;
 import com.example.resdesux2.R;
 
 public class MainActivity extends BoundActivity {

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.resdesux2.BoundActivity;
+import com.example.resdesux2.Server.BoundActivity;
 import com.example.resdesux2.HelperClasses.UserListAdaptor;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;

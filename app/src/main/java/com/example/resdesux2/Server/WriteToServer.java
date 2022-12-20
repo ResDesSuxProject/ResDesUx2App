@@ -1,4 +1,4 @@
-package com.example.resdesux2.Services;
+package com.example.resdesux2.Server;
 
 import android.os.Handler;
 import android.os.Message;

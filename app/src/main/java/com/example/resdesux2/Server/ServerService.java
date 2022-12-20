@@ -1,4 +1,4 @@
-package com.example.resdesux2.Services;
+package com.example.resdesux2.Server;
 
 import android.app.Service;
 import android.content.Intent;
@@ -134,8 +134,8 @@ public class ServerService extends Service {
                 users = new ArrayList<>();
                 for (String incomingUser : incomingUsers) {
                     String[] userData = incomingUser.split(",");
-                    if (userData.length != 3) continue;
-                    users.add(new User(Integer.parseInt(userData[0]), userData[1], Double.parseDouble(userData[2])));
+                    if (userData.length != 4) continue;
+                    users.add(new User(Integer.parseInt(userData[0]), userData[1], Double.parseDouble(userData[2]), Integer.parseInt(userData[3])));
                 }
 
                 // update all the listeners and then delete them

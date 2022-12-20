@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".Services.ServerService"
+            android:name=".Server.ServerService"
             android:singleUser="true"/>
     </application>
 
