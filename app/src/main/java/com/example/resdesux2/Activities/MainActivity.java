@@ -50,7 +50,6 @@ public class MainActivity extends BoundActivity {
     }
 
     public void onScoreChange(double value) {
-        Toast.makeText(this, "Heyo, score:" + value, Toast.LENGTH_SHORT).show();
         Log.i("MainActivity", "onScoreChange: " + value);
         TextView textView = (TextView) findViewById(R.id.scoreView);
         textView.setText(String.format("Score: %s", value));
