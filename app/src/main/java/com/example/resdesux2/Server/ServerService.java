@@ -22,7 +22,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "192.168.31.62"; //  "10.0.2.2"; //192.168.31.62";
+    static final String IP_ADDRESS = "130.89.176.150"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
