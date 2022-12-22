@@ -4,17 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Dashboard">
+    tools:context=".Activities.DashboardActivity">
 
     <Button
         android:id="@+id/button_friends_back_to_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back to the my score"
+        android:text="@string/back_to_the_my_score"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.836" />
+        android:layout_margin="24dp" />
+
+    <ListView
+        android:id="@+id/users_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_margin="16dp"
+
+        app:layout_constraintBottom_toTopOf="@+id/button_friends_back_to_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
