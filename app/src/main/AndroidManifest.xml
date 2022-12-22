@@ -14,7 +14,7 @@
         android:theme="@style/Theme.ResDesUx2"
         tools:targetApi="31">
         <activity
-            android:name=".login"
+            android:name=".Activities.login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

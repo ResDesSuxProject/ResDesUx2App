@@ -1,4 +1,4 @@
-package com.example.resdesux2;
+package com.example.resdesux2.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.resdesux2.Activities.MainActivity;
+import com.example.resdesux2.R;
 
 public class login extends AppCompatActivity {
 
