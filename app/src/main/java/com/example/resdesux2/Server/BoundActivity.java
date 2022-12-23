@@ -5,13 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.resdesux2.R;
 
 public class BoundActivity extends AppCompatActivity {
     protected ServerService serverService;
     protected boolean isBound;
     protected boolean isConnected;
+    private Menu toolbarMenu;
 
     /**
      * This instantiate a connection with the service and handles that it connects.
@@ -57,6 +64,10 @@ public class BoundActivity extends AppCompatActivity {
      */
     protected void onConnected(boolean connected) {
         isConnected = true;
+        if (toolbarMenu != null) {
+            MenuItem item = toolbarMenu.findItem(R.id.not_connected_toolbar);
+            item.setVisible(false);
+        }
     }
 
     /**
@@ -64,6 +75,7 @@ public class BoundActivity extends AppCompatActivity {
      */
     private void onBound() {
         serverService.setConnectionListener(this::onConnected);
+        serverService.setConnectionFailedListener(this::onFailedConnection);
     }
 
     /**
@@ -76,6 +88,33 @@ public class BoundActivity extends AppCompatActivity {
         if (isBound) {
             unbindService(connection);
             isBound = false;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        toolbarMenu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_menu, menu);
+        return true;
+//        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void onFailedConnection(boolean isConnected) {
+        if (toolbarMenu != null) {
+            MenuItem item = toolbarMenu.findItem(R.id.not_connected_toolbar);
+            item.setVisible(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.not_connected_toolbar) {
+
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 }

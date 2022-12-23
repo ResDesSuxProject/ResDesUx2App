@@ -22,11 +22,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "192.168.31.62"; //  "10.0.2.2"; //192.168.31.62";
+    static final String IP_ADDRESS = "192.168.2.75"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
+    public static final int MESSAGE_FAILED_CONNECTION = 98;
     public boolean isConnected = false;
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
@@ -41,6 +42,7 @@ public class ServerService extends Service {
     /* ----- listeners ----- */
     // change listeners
     private ChangeListener<Boolean> connectedListener;
+    private ChangeListener<Boolean> connectionFailedListener;
     private ChangeListener<Double> scoreListener;
     // single listeners
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
@@ -52,9 +54,11 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
-            new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
+
+            // Run a task in the background to connect to the server
+            new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler).execute();
 
             isRunning = true;
         }
@@ -101,7 +105,7 @@ public class ServerService extends Service {
      * @return always true
      */
     private boolean handleMessage(Message message) {
-        Log.i(TAG, "handleMessage: " + message.getData());
+//        Log.i(TAG, "handleMessage: " + message.getData());
 
         switch (message.what) {
             // If the message is about data received from the server
@@ -117,6 +121,13 @@ public class ServerService extends Service {
             case MESSAGE_DISCONNECTED:
                 reconnect();
             break;
+
+            // If it failed to connect to the server
+            case MESSAGE_FAILED_CONNECTION:
+                if (connectionFailedListener != null) {
+                    connectionFailedListener.onChange(false);
+                }
+                break;
         }
         return true;
     }
@@ -176,6 +187,10 @@ public class ServerService extends Service {
         else connectedListener = listener;
     }
 
+    public void setConnectionFailedListener(ChangeListener<Boolean> listener) {
+        connectionFailedListener = listener;
+    }
+
     /**
      * Set a listener that gets triggered constantly when the score of the user with ID 0 changes
      * @param listener a listener which has an onChange method taking a Double.
@@ -210,7 +225,7 @@ public class ServerService extends Service {
         }
 
         isConnected = false;
-        new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
+        new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler).execute();
         isRunning = true;
 
         Log.i(TAG, "reconnecting..");
