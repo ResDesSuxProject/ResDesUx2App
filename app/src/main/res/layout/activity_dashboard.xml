@@ -19,13 +19,27 @@
 
     <ListView
         android:id="@+id/users_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="269dp"
+        android:layout_height="441dp"
 
         android:layout_margin="16dp"
-
         app:layout_constraintBottom_toTopOf="@+id/button_friends_back_to_main"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.722" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="333dp"
+        android:layout_height="49dp"
+        android:text="These are the scores of your friends"
+        android:textSize="21dp"
+        app:layout_constraintBottom_toTopOf="@+id/users_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.592"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444" />
 </androidx.constraintlayout.widget.ConstraintLayout>
