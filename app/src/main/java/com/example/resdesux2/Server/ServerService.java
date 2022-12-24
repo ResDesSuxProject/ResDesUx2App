@@ -20,9 +20,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "192.168.31.62"; //  "10.0.2.2"; //192.168.31.62";
+    static final String IP_ADDRESS = "130.89.81.247"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
@@ -42,6 +43,7 @@ public class ServerService extends Service {
     // change listeners
     private ChangeListener<Boolean> connectedListener;
     private ChangeListener<Double> scoreListener;
+    private ChangeListener<Integer> loginListener;
     // single listeners
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
 
@@ -162,6 +164,11 @@ public class ServerService extends Service {
                 }
                 userListeners = new ArrayList<>();
                 break;
+            case "login":
+                int loginId = Integer.parseInt(arguments[1]);
+                if (loginListener != null)
+                    loginListener.onChange(loginId);
+                break;
         }
     }
 
@@ -195,6 +202,12 @@ public class ServerService extends Service {
     public void getUsers(ChangeListener<ArrayList<User>> listener) {
         userListeners.add(listener);
         Thread thread = new WriteToServer("get_users: 0", writer, mainThreadHandler);
+        thread.start();
+    }
+
+    public void login(String username, String password, ChangeListener<Integer> listener){
+        loginListener = listener;
+        Thread thread = new WriteToServer(String.format("login: %s", username.trim()), writer, mainThreadHandler);
         thread.start();
     }
 
