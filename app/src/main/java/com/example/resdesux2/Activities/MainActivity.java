@@ -18,7 +18,6 @@ public class MainActivity extends BoundActivity {
 
         // proberen
         findViewById(R.id.button_friends).setOnClickListener(buttonClickListener);  //VAN main NAAR friends
-        findViewById(R.id.button_calendar).setOnClickListener(buttonClickListener); // VAN main NAAR calendar
 
 
         // proberen
@@ -31,10 +30,6 @@ public class MainActivity extends BoundActivity {
                 case R.id.button_friends:
                     Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
                     startActivity(intent);
-                    break;
-                case R.id.button_calendar:
-                    Intent intent_calendar = new Intent(MainActivity.this, CalendarActivity.class);
-                    startActivity(intent_calendar);
                     break;
             }
         }
