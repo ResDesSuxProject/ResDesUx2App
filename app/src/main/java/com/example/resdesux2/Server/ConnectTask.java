@@ -24,6 +24,8 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
     }
 
     protected void onPostExecute(Socket socket) {
+        if (socket == null) return;
+
         try {
             serverService.connectToServer(socket);
         } catch (IOException e) {
@@ -33,7 +35,7 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
 
     @Override
     protected Socket doInBackground(Void... voids) {
-        while(true) {
+        while(!isCancelled()) {
             try {
                 // Create a socket and connect to the server
 //                return new Socket(serverAddress, serverPort);
@@ -51,6 +53,8 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
             Message message = handler.obtainMessage();
             message.what = ServerService.MESSAGE_FAILED_CONNECTION;
             handler.sendMessage(message);
+            // TODO make this thread wait a bit
         }
+        return null;
     }
 }

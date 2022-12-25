@@ -1,24 +1,34 @@
 package com.example.resdesux2.Server;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import com.example.resdesux2.Fragments.ConnectionDialog;
 import com.example.resdesux2.R;
 
-public class BoundActivity extends AppCompatActivity {
+import java.sql.Connection;
+
+public class BoundActivity extends AppCompatActivity implements ConnectionDialog.ConnectionDialogListener {
+    private static final String TAG = "BoundActivity";
     protected ServerService serverService;
     protected boolean isBound;
     protected boolean isConnected;
     private Menu toolbarMenu;
+    private ConnectionDialog connectionDialog;
 
     /**
      * This instantiate a connection with the service and handles that it connects.
@@ -46,6 +56,7 @@ public class BoundActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         isConnected = false;
+        connectionDialog = new ConnectionDialog();
 
         Intent intent = new Intent(this, ServerService.class);
 
@@ -111,10 +122,19 @@ public class BoundActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.not_connected_toolbar) {
-
+            connectionDialog.show(getSupportFragmentManager(), "ConnectionDialog");
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDialogServerIPUpdated(DialogFragment dialog, String serverIP) {
+        if (isBound) serverService.updateServerIP(serverIP);
+    }
+
+    public String getServerIP() {
+        return isBound ? serverService.getServerIP() : "";
     }
 }

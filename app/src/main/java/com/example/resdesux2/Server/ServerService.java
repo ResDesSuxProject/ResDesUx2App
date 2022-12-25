@@ -2,6 +2,7 @@ package com.example.resdesux2.Server;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,10 +21,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "130.89.81.247"; //  "10.0.2.2"; //192.168.31.62";
+    static String IP_ADDRESS = "130.89.81.247"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
@@ -34,10 +34,12 @@ public class ServerService extends Service {
     private boolean isRunning = false;
 
     /* ----- Server ----- */
+    public Handler mainThreadHandler;
     private Socket socket;
     private  BufferedWriter writer;
+    private ConnectTask connectTask;
     ServerListenerThread listenerThread;
-    public Handler mainThreadHandler;
+    SharedPreferences sharedPreferencesServer;
 
 
     /* ----- listeners ----- */
@@ -56,11 +58,17 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
+            // get or create SharedPreferences
+            sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
+            IP_ADDRESS = getServerIP();
+
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
 
             // Run a task in the background to connect to the server
-            new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler).execute();
+            connectTask = new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler);
+            connectTask.execute();
+
 
             isRunning = true;
         }
@@ -107,7 +115,7 @@ public class ServerService extends Service {
      * @return always true
      */
     private boolean handleMessage(Message message) {
-//        Log.i(TAG, "handleMessage: " + message.getData());
+        Log.i(TAG, "handleMessage: " + message.getData());
 
         switch (message.what) {
             // If the message is about data received from the server
@@ -220,6 +228,13 @@ public class ServerService extends Service {
         thread.start();
     }
 
+    /**
+     * Queries the server if the login is valid, if it is the id of the user is returned.
+     * If not then -1 is returned
+     * @param username The username of the given user
+     * @param password The password the user entered
+     * @param listener The lister that gets called when the server responds.
+     */
     public void login(String username, String password, ChangeListener<Integer> listener){
         loginListener = listener;
         Thread thread = new WriteToServer(String.format("login: %s", username.trim()), writer, mainThreadHandler);
@@ -230,15 +245,21 @@ public class ServerService extends Service {
      * Reconnects to the server and stops the listenerThread
      */
     private void reconnect(){
-        listenerThread.interrupt();
+        // disconnect everything first
+        isConnected = false;
+        if (listenerThread != null) listenerThread.interrupt();
+        if (connectTask != null) connectTask.cancel(true);
+
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException ignored) {}
         }
 
-        isConnected = false;
-        new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler).execute();
+        // Run a task in the background to connect to the server
+        connectTask = new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler);
+        connectTask.execute();
+
         isRunning = true;
 
         Log.i(TAG, "reconnecting..");
@@ -261,6 +282,15 @@ public class ServerService extends Service {
             }
         }
         Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
+    }
+
+    public String getServerIP() {
+        return sharedPreferencesServer.getString("SERVER_IP", "");
+    }
+    public void updateServerIP(String serverIP) {
+        sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
+        IP_ADDRESS = serverIP;
+        reconnect();
     }
 
     public class ServiceBinder extends Binder {
