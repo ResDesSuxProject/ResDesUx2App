@@ -33,7 +33,6 @@ public class ServerListenerThread extends Thread {
             try {
                 String line = reader.readLine();
                 if (line == null) continue;
-                Log.v(TAG, "received: " + line);
 
                 // If the server pinged us respond with a pong
                 if (line.contains("ping")) {
@@ -41,6 +40,8 @@ public class ServerListenerThread extends Thread {
                     writer.flush();
                     continue;
                 }
+
+                Log.v(TAG, "received: " + line);
 
                 // ----- Send message to the main thread -----
                 // Create a new Message object

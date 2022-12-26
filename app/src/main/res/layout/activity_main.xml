@@ -8,14 +8,17 @@
     tools:context=".Activities.MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/main_welcome_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Hello"
+        android:textSize="@dimen/title_size"
+        android:textColor="?colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        />
 
     <Button
         android:id="@+id/button_friends"
@@ -58,12 +61,11 @@
         android:id="@+id/scoreView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Score: "
+        android:layout_marginTop="20dp"
+        android:text="Your score is "
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/main_welcome_message" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

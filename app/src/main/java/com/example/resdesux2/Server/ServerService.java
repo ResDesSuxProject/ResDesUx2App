@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ServerService extends Service {
     private static final String TAG = "Server Service";
@@ -43,6 +44,8 @@ public class ServerService extends Service {
     ServerListenerThread listenerThread;
     SharedPreferences sharedPreferencesServer;
 
+    private int currentUserID = -1;
+    private User currentUser = null;
 
     /* ----- listeners ----- */
     // change listeners
@@ -50,8 +53,10 @@ public class ServerService extends Service {
     private ChangeListener<Boolean> connectionFailedListener;
     private ChangeListener<Double> scoreListener;
     private ChangeListener<Integer> loginListener;
+
     // single listeners
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
+    private ArrayList<ChangeListener<User>> currentUserListener = new ArrayList<>();
 
     private double score = -1;
     private ArrayList<User> users = new ArrayList<>();
@@ -101,7 +106,10 @@ public class ServerService extends Service {
 
         // Send a message to the server which includes name and a listener for the score
         String request = "name: Mobile client " + socket.getLocalSocketAddress().toString().replace("/", "").replace(":", ";") + "\n";
-        request += "listen_score: 0\n";
+        if (currentUserID != -1)
+            request += "listen_score: " + currentUserID;
+        if (currentUserListener.size() > 0 && currentUser != null)
+            request += "\nget_user: " + currentUserID;
         new WriteToServer(request, writer, mainThreadHandler).start();
 
         Log.i(TAG, "connectToServer: Connected to server " + socket.getRemoteSocketAddress());
@@ -172,6 +180,18 @@ public class ServerService extends Service {
                 if (scoreListener != null)
                     scoreListener.onChange(score);
                 break;
+            case "user":
+                String[] currentUserData = arguments[1].split(",");
+                if (currentUserData.length != 4) break;
+                currentUser = new User(Integer.parseInt(currentUserData[0]), currentUserData[1],
+                        Double.parseDouble(currentUserData[2]), Integer.parseInt(currentUserData[3]));
+
+                // Update all the listeners and then delete them
+                for (ChangeListener<User> listener : currentUserListener) {
+                    listener.onChange(currentUser);
+                }
+                currentUserListener = new ArrayList<>();
+                break;
             case "users":
                 String[] incomingUsers = arguments[1].split("\\|");
                 users = new ArrayList<>();
@@ -189,6 +209,8 @@ public class ServerService extends Service {
                 break;
             case "login":
                 int loginId = Integer.parseInt(arguments[1]);
+                if (loginId != -1)
+                    setCurrentUserID(loginId);
                 if (loginListener != null)
                     loginListener.onChange(loginId);
                 break;
@@ -236,6 +258,14 @@ public class ServerService extends Service {
         userListeners.add(listener);
         Thread thread = new WriteToServer("get_users: 0", writer, mainThreadHandler);
         thread.start();
+    }
+
+    public void getCurrentUser(ChangeListener<User> listener) {
+        if (currentUser != null) {
+            listener.onChange(currentUser);
+        } else {
+            currentUserListener.add(listener);
+        }
     }
 
     /**
@@ -292,6 +322,24 @@ public class ServerService extends Service {
             }
         }
         Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
+    }
+
+    public int getCurrentUserID() {
+        return currentUserID;
+    }
+
+    /**
+     * Sets the current user, !!this is the same as logging in.
+     * As it requests the user and a listener on the score of the user
+     * @param currentUserID
+     */
+    public void setCurrentUserID(int currentUserID) {
+//        if (this.currentUserID == currentUserID) return;
+        this.currentUserID = currentUserID;
+
+        // request the score listener for the new user and info about the new user
+        String request = String.format(Locale.US, "listen_score: %d\nget_user: %d", this.currentUserID, this.currentUserID);
+        new WriteToServer(request, writer, mainThreadHandler).start();
     }
 
     /**
