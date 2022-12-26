@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/not_connected_toolbar"
-        android:title="connected"
+        android:title="@string/not_connected"
         android:visible="false"
         app:showAsAction="always"
         android:icon="@drawable/baseline_signal_wifi_connected_no_internet_4_24"/>
