@@ -6,4 +6,11 @@
     <string name="server_ip_address">Server IP address:</string>
     <string name="can_not_connect_server">Couldn\'t connect to server</string>
     <string name="not_connected">Not connected</string>
+    <string name="welcome_message">Welcome</string>
+    <string name="username">Username</string>
+    <string name="enter_your_username">Enter your username:</string>
+    <string name="password">Password</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="LoginBtn">Login</string>
+    <string name="not_connected_message">Not connected to the server</string>
 </resources>
