@@ -23,8 +23,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerService extends Service {
-    static String IP_ADDRESS = "130.89.81.247"; //  "10.0.2.2"; //192.168.31.62";
     static final int SERVER_PORT = 9999;
+    private String server_IP = "";
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
@@ -60,13 +60,13 @@ public class ServerService extends Service {
         if (!isRunning) {
             // get or create SharedPreferences
             sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
-            IP_ADDRESS = getServerIP();
+            server_IP = getServerIP();
 
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
 
             // Run a task in the background to connect to the server
-            connectTask = new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler);
+            connectTask = new ConnectTask(server_IP, SERVER_PORT, this, mainThreadHandler);
             connectTask.execute();
 
 
@@ -115,7 +115,7 @@ public class ServerService extends Service {
      * @return always true
      */
     private boolean handleMessage(Message message) {
-        Log.i(TAG, "handleMessage: " + message.getData());
+//        Log.i(TAG, "handleMessage: " + message.getData());
 
         switch (message.what) {
             // If the message is about data received from the server
@@ -198,10 +198,16 @@ public class ServerService extends Service {
      *                  Or a method that takes an boolean and then write this::METHOD_NAME
      */
     public void setConnectionListener(ChangeListener<Boolean> listener) {
+        connectedListener = listener;
         if (isConnected) listener.onChange(true);
-        else connectedListener = listener;
     }
 
+    /**
+     * Sets the connection failed listener which gets triggered everytime the connection
+     * to the server can't be established.
+     * Used in BoundActivity
+     * @param listener the listener which gets called with a Boolean
+     */
     public void setConnectionFailedListener(ChangeListener<Boolean> listener) {
         connectionFailedListener = listener;
     }
@@ -257,7 +263,7 @@ public class ServerService extends Service {
         }
 
         // Run a task in the background to connect to the server
-        connectTask = new ConnectTask(IP_ADDRESS, SERVER_PORT, this, mainThreadHandler);
+        connectTask = new ConnectTask(server_IP, SERVER_PORT, this, mainThreadHandler);
         connectTask.execute();
 
         isRunning = true;
@@ -284,12 +290,22 @@ public class ServerService extends Service {
         Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Retrieves the server IP from the shared preferences (local storage)
+     * @return The stored server IP
+     */
     public String getServerIP() {
         return sharedPreferencesServer.getString("SERVER_IP", "");
     }
+
+    /**
+     * Updates the server IP in the local storage
+     * And disconnects to the current server and connects to the new one
+     * @param serverIP the new server IP in the form of 0.0.0.0
+     */
     public void updateServerIP(String serverIP) {
         sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
-        IP_ADDRESS = serverIP;
+        server_IP = serverIP;
         reconnect();
     }
 

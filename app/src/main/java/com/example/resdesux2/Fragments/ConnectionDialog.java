@@ -18,12 +18,13 @@ import com.example.resdesux2.R;
 import com.example.resdesux2.Server.BoundActivity;
 
 public class ConnectionDialog extends DialogFragment {
-    private String originalServerIP;
     public interface ConnectionDialogListener {
         void onDialogServerIPUpdated(DialogFragment dialog, String serverIP);
         String getServerIP();
     }
-    ConnectionDialogListener listener;
+
+    private String originalServerIP;
+    private ConnectionDialogListener listener;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -37,8 +38,7 @@ public class ConnectionDialog extends DialogFragment {
             Log.e("TAG", "onAttach: " + originalServerIP);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
+            throw new ClassCastException(context + " must implement NoticeDialogListener");
         }
     }
 
@@ -59,10 +59,11 @@ public class ConnectionDialog extends DialogFragment {
                 // Add action buttons
                 .setPositiveButton("Update", (dialog, id) -> {
                     String serverIP = ((EditText) view.findViewById(R.id.dialogServerIP)).getText().toString();
-                    listener.onDialogServerIPUpdated(this, serverIP);
+                    if (!serverIP.equals(originalServerIP)) {
+                        listener.onDialogServerIPUpdated(this, serverIP);
+                    }
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> {});
         return builder.create();
     }
-
 }
