@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="24dp" />
+        android:layout_margin="30dp" />
 
     <ListView
         android:id="@+id/users_list"
@@ -35,7 +35,7 @@
         android:layout_width="333dp"
         android:layout_height="49dp"
         android:text="These are the scores of your friends"
-        android:textSize="21dp"
+        android:textSize="21sp"
         app:layout_constraintBottom_toTopOf="@+id/users_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
