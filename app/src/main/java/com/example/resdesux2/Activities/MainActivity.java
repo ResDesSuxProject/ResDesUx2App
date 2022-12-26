@@ -6,8 +6,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.resdesux2.Models.User;
 import com.example.resdesux2.Server.BoundActivity;
 import com.example.resdesux2.R;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends BoundActivity {
 
@@ -46,12 +49,16 @@ public class MainActivity extends BoundActivity {
 
         // Example of how you can listen to a score change
         serverService.setScoreListener(this::onScoreChange);
+        serverService.getCurrentUser(this::onUserRetrieved);
     }
 
     public void onScoreChange(double value) {
-        Log.i("MainActivity", "onScoreChange: " + value);
         TextView textView = (TextView) findViewById(R.id.scoreView);
         textView.setText(String.format("Score: %s", value));
+    }
+
+    public void onUserRetrieved(User currentUser) {
+        ((TextView) findViewById(R.id.main_welcome_message)).setText("Hello " + currentUser.getUserName());
     }
 
 
