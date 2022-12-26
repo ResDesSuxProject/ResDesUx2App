@@ -51,6 +51,7 @@ public class LoginActivity extends BoundActivity {
             Intent intent_login = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent_login);
         } else {
+            ((TextView) findViewById(R.id.login_username_input)).setError("Username is incorrect");
             Toast.makeText(this, "Username is incorrect", Toast.LENGTH_SHORT).show();
         }
     }
