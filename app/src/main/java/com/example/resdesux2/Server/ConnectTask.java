@@ -1,42 +1,60 @@
 package com.example.resdesux2.Server;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
+import com.example.resdesux2.Models.ChangeListener;
+
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class ConnectTask extends AsyncTask<Void, Void, Socket> {
     private static final String TAG = "Connect Task";
     private final String serverAddress;
     private final int serverPort;
-    private final ServerService serverService;
+    private final Handler handler;
+    private final ChangeListener<Socket> connectToServerListener;
 
-    public ConnectTask(String serverAddress, int serverPort, ServerService serverService) {
+    public ConnectTask(String serverAddress, int serverPort, ChangeListener<Socket> connectToServerListener, Handler handler) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
-        this.serverService = serverService;
+
+        this.handler = handler;
+        this.connectToServerListener = connectToServerListener;
     }
 
     protected void onPostExecute(Socket socket) {
-        try {
-            serverService.connectToServer(socket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        if (socket == null) return;
 
+        connectToServerListener.onChange(socket);
     }
 
     @Override
     protected Socket doInBackground(Void... voids) {
-        while(true) {
+        while(!isCancelled()) {
             try {
                 // Create a socket and connect to the server
-                return new Socket(serverAddress, serverPort);
-            } catch (IOException e) {
-                Log.e(TAG, "doInBackground: Can't connect to server, reconnecting...");
-                Log.e(TAG, e.toString());
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(serverAddress, serverPort), 2000);
+                if (socket.isConnected()){
+                    return socket;
+                }
+            } catch (IOException ignored) {}
+
+            // Send service a new message
+            Message message = handler.obtainMessage();
+            message.what = ServerService.MESSAGE_FAILED_CONNECTION;
+            handler.sendMessage(message);
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                break;
             }
         }
+        return null;
     }
 }

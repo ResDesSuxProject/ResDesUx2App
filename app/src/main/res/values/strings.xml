@@ -2,4 +2,8 @@
     <string name="app_name">ResDesUx2</string>
     <string name="back_to_the_my_score">Back to the my score</string>
     <string name="user_status_txt">User status</string>
+    <string name="settings">Settings</string>
+    <string name="server_ip_address">Server IP address:</string>
+    <string name="can_not_connect_server">Couldn\'t connect to server</string>
+    <string name="not_connected">Not connected</string>
 </resources>

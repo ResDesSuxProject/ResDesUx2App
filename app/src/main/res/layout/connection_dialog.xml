@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:weightSum="100">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_weight="50"
+        android:orientation="vertical"
+        android:layout_margin="20dp">
+
+    <TextView
+        android:id="@+id/popupTitle"
+        android:layout_width="wrap_content"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/title_size"
+        android:text="@string/can_not_connect_server"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="@dimen/sub_title_size"
+
+        android:text="@string/server_ip_address"
+        />
+
+        <EditText
+            android:id="@+id/dialogServerIP"
+
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:tooltipText="IP address of the server"
+            android:autofillHints="IP address" />
+    </LinearLayout>
+</LinearLayout>

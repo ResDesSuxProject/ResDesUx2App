@@ -2,6 +2,7 @@ package com.example.resdesux2.Server;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -20,28 +21,33 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class ServerService extends Service {
-    static final String IP_ADDRESS = "130.89.81.247"; //  "10.0.2.2"; //192.168.31.62";
-    static final int SERVER_PORT = 9999;
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
-    public boolean isConnected = false;
+    public static final int MESSAGE_FAILED_CONNECTION = 98;
+
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
 
     /* ----- Server ----- */
+    static final int SERVER_PORT = 9999;
+    private String server_IP = "";
+
+    public boolean isConnected = false;
+    public Handler mainThreadHandler;
     private Socket socket;
     private  BufferedWriter writer;
+    private ConnectTask connectTask;
     ServerListenerThread listenerThread;
-    public Handler mainThreadHandler;
+    SharedPreferences sharedPreferencesServer;
 
 
     /* ----- listeners ----- */
     // change listeners
     private ChangeListener<Boolean> connectedListener;
+    private ChangeListener<Boolean> connectionFailedListener;
     private ChangeListener<Double> scoreListener;
     private ChangeListener<Integer> loginListener;
     // single listeners
@@ -54,9 +60,17 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
-            new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
+            // get or create SharedPreferences
+            sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
+            server_IP = getServerIP();
+
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
+
+            // Run a task in the background to connect to the server
+            connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
+            connectTask.execute();
+
 
             isRunning = true;
         }
@@ -66,17 +80,19 @@ public class ServerService extends Service {
     /**
      * Connect to server is called form ConnectTask when the server is (re)connected
      * @param socket The socket that connects to the server
-     * @throws IOException If an I/O error occurs when creating the input stream,
-     *                      the socket is closed, the socket is not connected,
-     *                      or the socket input has been shutdown using shutdownInput()
      */
-    public void connectToServer(Socket socket) throws IOException {
+    public void connectToServer(Socket socket) {
         // Store the socket so it can latter be closed
         this.socket = socket;
 
         // create a reader and writer to communicate with the server
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException exception){
+            throw new RuntimeException("Couldn't create reader or writer from server");
+        }
 
         // Setup the thread to listen to the server
         listenerThread = new ServerListenerThread("Server listener", mainThreadHandler, reader, writer);
@@ -103,7 +119,7 @@ public class ServerService extends Service {
      * @return always true
      */
     private boolean handleMessage(Message message) {
-        Log.i(TAG, "handleMessage: " + message.getData());
+//        Log.i(TAG, "handleMessage: " + message.getData());
 
         switch (message.what) {
             // If the message is about data received from the server
@@ -119,6 +135,13 @@ public class ServerService extends Service {
             case MESSAGE_DISCONNECTED:
                 reconnect();
             break;
+
+            // If it failed to connect to the server
+            case MESSAGE_FAILED_CONNECTION:
+                if (connectionFailedListener != null) {
+                    connectionFailedListener.onChange(false);
+                }
+                break;
         }
         return true;
     }
@@ -179,8 +202,18 @@ public class ServerService extends Service {
      *                  Or a method that takes an boolean and then write this::METHOD_NAME
      */
     public void setConnectionListener(ChangeListener<Boolean> listener) {
+        connectedListener = listener;
         if (isConnected) listener.onChange(true);
-        else connectedListener = listener;
+    }
+
+    /**
+     * Sets the connection failed listener which gets triggered everytime the connection
+     * to the server can't be established.
+     * Used in BoundActivity
+     * @param listener the listener which gets called with a Boolean
+     */
+    public void setConnectionFailedListener(ChangeListener<Boolean> listener) {
+        connectionFailedListener = listener;
     }
 
     /**
@@ -205,6 +238,13 @@ public class ServerService extends Service {
         thread.start();
     }
 
+    /**
+     * Queries the server if the login is valid, if it is the id of the user is returned.
+     * If not then -1 is returned
+     * @param username The username of the given user
+     * @param password The password the user entered
+     * @param listener The lister that gets called when the server responds.
+     */
     public void login(String username, String password, ChangeListener<Integer> listener){
         loginListener = listener;
         Thread thread = new WriteToServer(String.format("login: %s", username.trim()), writer, mainThreadHandler);
@@ -215,15 +255,21 @@ public class ServerService extends Service {
      * Reconnects to the server and stops the listenerThread
      */
     private void reconnect(){
-        listenerThread.interrupt();
+        // disconnect everything first
+        isConnected = false;
+        if (listenerThread != null) listenerThread.interrupt();
+        if (connectTask != null) connectTask.cancel(true);
+
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException ignored) {}
         }
 
-        isConnected = false;
-        new ConnectTask(IP_ADDRESS, SERVER_PORT, this).execute();
+        // Run a task in the background to connect to the server
+        connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
+        connectTask.execute();
+
         isRunning = true;
 
         Log.i(TAG, "reconnecting..");
@@ -246,6 +292,25 @@ public class ServerService extends Service {
             }
         }
         Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Retrieves the server IP from the shared preferences (local storage)
+     * @return The stored server IP
+     */
+    public String getServerIP() {
+        return sharedPreferencesServer.getString("SERVER_IP", "");
+    }
+
+    /**
+     * Updates the server IP in the local storage
+     * And disconnects to the current server and connects to the new one
+     * @param serverIP the new server IP in the form of 0.0.0.0
+     */
+    public void updateServerIP(String serverIP) {
+        sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
+        server_IP = serverIP;
+        reconnect();
     }
 
     public class ServiceBinder extends Binder {

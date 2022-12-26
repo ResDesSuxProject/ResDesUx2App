@@ -32,6 +32,7 @@ public class ServerListenerThread extends Thread {
         while (true) {
             try {
                 String line = reader.readLine();
+                if (line == null) continue;
                 Log.v(TAG, "received: " + line);
 
                 // If the server pinged us respond with a pong
