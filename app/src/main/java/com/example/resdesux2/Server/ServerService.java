@@ -23,17 +23,19 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerService extends Service {
-    static final int SERVER_PORT = 9999;
-    private String server_IP = "";
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
     public static final int MESSAGE_FAILED_CONNECTION = 98;
-    public boolean isConnected = false;
+
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
 
     /* ----- Server ----- */
+    static final int SERVER_PORT = 9999;
+    private String server_IP = "";
+
+    public boolean isConnected = false;
     public Handler mainThreadHandler;
     private Socket socket;
     private  BufferedWriter writer;
@@ -66,7 +68,7 @@ public class ServerService extends Service {
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
 
             // Run a task in the background to connect to the server
-            connectTask = new ConnectTask(server_IP, SERVER_PORT, this, mainThreadHandler);
+            connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
             connectTask.execute();
 
 
@@ -78,17 +80,19 @@ public class ServerService extends Service {
     /**
      * Connect to server is called form ConnectTask when the server is (re)connected
      * @param socket The socket that connects to the server
-     * @throws IOException If an I/O error occurs when creating the input stream,
-     *                      the socket is closed, the socket is not connected,
-     *                      or the socket input has been shutdown using shutdownInput()
      */
-    public void connectToServer(Socket socket) throws IOException {
+    public void connectToServer(Socket socket) {
         // Store the socket so it can latter be closed
         this.socket = socket;
 
         // create a reader and writer to communicate with the server
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException exception){
+            throw new RuntimeException("Couldn't create reader or writer from server");
+        }
 
         // Setup the thread to listen to the server
         listenerThread = new ServerListenerThread("Server listener", mainThreadHandler, reader, writer);
@@ -263,7 +267,7 @@ public class ServerService extends Service {
         }
 
         // Run a task in the background to connect to the server
-        connectTask = new ConnectTask(server_IP, SERVER_PORT, this, mainThreadHandler);
+        connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
         connectTask.execute();
 
         isRunning = true;
