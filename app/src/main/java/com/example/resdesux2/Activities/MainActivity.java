@@ -9,6 +9,8 @@ import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.BoundActivity;
 
+import java.util.Locale;
+
 public class MainActivity extends BoundActivity {
 
     @Override
@@ -39,9 +41,10 @@ public class MainActivity extends BoundActivity {
         serverService.getCurrentUser(this::onUserRetrieved);
     }
 
-    private void onScoreChange(double value) {
+    private void onScoreChange(int intensityScore, int frequencyScore) {
         TextView textView = (TextView) findViewById(R.id.scoreView);
-        textView.setText(String.format("Your score is %s", value));
+        textView.setText(String.format(Locale.US, "Your scores are %d and %d",
+                intensityScore, frequencyScore));
     }
 
     private void onUserRetrieved(User currentUser) {
