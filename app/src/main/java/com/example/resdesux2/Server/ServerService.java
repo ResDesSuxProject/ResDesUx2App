@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.resdesux2.Models.Change2Listener;
 import com.example.resdesux2.Models.ChangeListener;
 import com.example.resdesux2.Models.User;
 
@@ -51,14 +52,14 @@ public class ServerService extends Service {
     // change listeners
     private ChangeListener<Boolean> connectedListener;
     private ChangeListener<Boolean> connectionFailedListener;
-    private ChangeListener<Double> scoreListener;
+    private Change2Listener<Integer, Integer> scoreListener;
     private ChangeListener<Integer> loginListener;
 
     // single listeners
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
     private ArrayList<ChangeListener<User>> currentUserListener = new ArrayList<>();
 
-    private double score = -1;
+    private User.Score score = null;
     private ArrayList<User> users = new ArrayList<>();
 
     @Override
@@ -176,12 +177,18 @@ public class ServerService extends Service {
 
         switch (command) {
             case "score":
-                score = Double.parseDouble(arguments[1]);
+                String[] scores = arguments[1].split(",");
+
+                int _score = scores.length >= 2 ? Integer.parseInt(scores[0]) : (int) Double.parseDouble(scores[0]);
+
+                score = new User.Score(_score, scores.length >= 2 ? Integer.parseInt(scores[1]) : _score);
+
                 if (scoreListener != null)
-                    scoreListener.onChange(score);
+                    scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
                 break;
             case "user":
                 String[] currentUserData = arguments[1].split(",");
+
                 // create a new user from the data. length 4 is the legacy 1 score approach and length 5 is the new two score approach
                 User _user = createUserFromData(currentUserData);
                 if (_user == null) break;
@@ -242,14 +249,15 @@ public class ServerService extends Service {
     }
 
     /**
-     * Set a listener that gets triggered constantly when the score of the user with ID 0 changes
+     * Set a listener that gets triggered constantly when the score of the logged in user changes
+     * The listener method called needs and int intensity and an int frequency scores.
      * @param listener a listener which has an onChange method taking a Double.
-     *                  Or a method that takes an Double and then write this::METHOD_NAME
+     *                  Or a method that takes two doubles and then write this::METHOD_NAME
      */
-    public void setScoreListener(ChangeListener<Double> listener) {
+    public void setScoreListener(Change2Listener<Integer, Integer> listener) {
         scoreListener = listener;
-        if (score != -1)
-            scoreListener.onChange(score);
+        if (score != null)
+            scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
     }
 
     /**
@@ -364,13 +372,16 @@ public class ServerService extends Service {
     }
 
     private User createUserFromData(String[] userData) {
+        // The old legacy way with one score
         if (userData.length == 4) {
+            int score = (int) Double.parseDouble(userData[2]);
             return new User(Integer.parseInt(userData[0]),
                     userData[1],
-                    Integer.parseInt(userData[2]),
-                    Integer.parseInt(userData[2]),
+                    score,
+                    score,
                     Integer.parseInt(userData[3]));
-        } else if (userData.length == 5) {
+        } // The new approach with two different score dimensions
+        else if (userData.length == 5) {
             return new User(Integer.parseInt(userData[0]),
                     userData[1],
                     Integer.parseInt(userData[2]),
