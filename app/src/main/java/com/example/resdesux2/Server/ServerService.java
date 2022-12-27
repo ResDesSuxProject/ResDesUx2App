@@ -182,9 +182,10 @@ public class ServerService extends Service {
                 break;
             case "user":
                 String[] currentUserData = arguments[1].split(",");
-                if (currentUserData.length != 4) break;
-                currentUser = new User(Integer.parseInt(currentUserData[0]), currentUserData[1],
-                        Double.parseDouble(currentUserData[2]), Integer.parseInt(currentUserData[3]));
+                // create a new user from the data. length 4 is the legacy 1 score approach and length 5 is the new two score approach
+                User _user = createUserFromData(currentUserData);
+                if (_user == null) break;
+                currentUser = _user;
 
                 // Update all the listeners and then delete them
                 for (ChangeListener<User> listener : currentUserListener) {
@@ -197,8 +198,10 @@ public class ServerService extends Service {
                 users = new ArrayList<>();
                 for (String incomingUser : incomingUsers) {
                     String[] userData = incomingUser.split(",");
-                    if (userData.length != 4) continue;
-                    users.add(new User(Integer.parseInt(userData[0]), userData[1], Double.parseDouble(userData[2]), Integer.parseInt(userData[3])));
+
+                    User user = createUserFromData(userData);
+                    if (user == null) continue;
+                    users.add(user);
                 }
 
                 // Update all the listeners and then delete them
@@ -331,10 +334,9 @@ public class ServerService extends Service {
     /**
      * Sets the current user, !!this is the same as logging in.
      * As it requests the user and a listener on the score of the user
-     * @param currentUserID
+     * @param currentUserID the new ID of the user.
      */
     public void setCurrentUserID(int currentUserID) {
-//        if (this.currentUserID == currentUserID) return;
         this.currentUserID = currentUserID;
 
         // request the score listener for the new user and info about the new user
@@ -359,6 +361,23 @@ public class ServerService extends Service {
         sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
         server_IP = serverIP;
         reconnect();
+    }
+
+    private User createUserFromData(String[] userData) {
+        if (userData.length == 4) {
+            return new User(Integer.parseInt(userData[0]),
+                    userData[1],
+                    Integer.parseInt(userData[2]),
+                    Integer.parseInt(userData[2]),
+                    Integer.parseInt(userData[3]));
+        } else if (userData.length == 5) {
+            return new User(Integer.parseInt(userData[0]),
+                    userData[1],
+                    Integer.parseInt(userData[2]),
+                    Integer.parseInt(userData[3]),
+                    Integer.parseInt(userData[4]));
+        }
+        return null;
     }
 
     public class ServiceBinder extends Binder {
