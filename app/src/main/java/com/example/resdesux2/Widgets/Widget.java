@@ -1,4 +1,4 @@
-package com.example.resdesux2.Activities;
+package com.example.resdesux2.Widgets;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -46,9 +46,9 @@ public class Widget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    private void onScoreChange(double value) {
+    private void onScoreChange(int intensityScore, int frequencyScore) {
         int textView1 = R.id.widget_score;
-        String your_score_is_ = String.format("your score is ", value);
+        String your_score_is_ = String.format("your score is %d", intensityScore);
 
     }
 
