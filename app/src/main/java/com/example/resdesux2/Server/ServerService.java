@@ -66,9 +66,11 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
-            // get or create SharedPreferences
+            // Get or create SharedPreferences
             sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
             server_IP = getServerIP();
+            // Set the current user to the last logged in, this is for the background and widgets
+            currentUserID = getLoggedInUser();
 
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
@@ -76,7 +78,6 @@ public class ServerService extends Service {
             // Run a task in the background to connect to the server
             connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
             connectTask.execute();
-
 
             isRunning = true;
         }
@@ -219,8 +220,7 @@ public class ServerService extends Service {
                 break;
             case "login":
                 int loginId = Integer.parseInt(arguments[1]);
-                if (loginId != -1)
-                    setCurrentUserID(loginId);
+                setCurrentUserID(loginId);
                 if (loginListener != null)
                     loginListener.onChange(loginId);
                 break;
@@ -344,8 +344,10 @@ public class ServerService extends Service {
      * As it requests the user and a listener on the score of the user
      * @param currentUserID the new ID of the user.
      */
-    public void setCurrentUserID(int currentUserID) {
-        this.currentUserID = currentUserID;
+    private void setCurrentUserID(int currentUserID) {
+        if (currentUserID == -1) return;
+
+        setLoggedInUser(currentUserID);
 
         // request the score listener for the new user and info about the new user
         String request = String.format(Locale.US, "listen_score: %d\nget_user: %d", this.currentUserID, this.currentUserID);
@@ -369,6 +371,14 @@ public class ServerService extends Service {
         sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
         server_IP = serverIP;
         reconnect();
+    }
+
+    public int getLoggedInUser() {
+        return sharedPreferencesServer.getInt("USER", -1);
+    }
+    private void setLoggedInUser(int userID) {
+        currentUserID = userID;
+        sharedPreferencesServer.edit().putInt("USER", userID).apply();
     }
 
     private User createUserFromData(String[] userData) {
