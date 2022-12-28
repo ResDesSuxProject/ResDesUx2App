@@ -43,7 +43,7 @@ public class MainActivity extends BoundActivity {
         TextView textView = (TextView) findViewById(R.id.scoreView);
         textView.setText(String.format("Your score is %s", value));
     }
-
+    // dit werkt dus niet ahahha
     private void onUserRetrieved(User currentUser) {
         ((TextView) findViewById(R.id.main_welcome_message)).setText("Hello " + currentUser.getUserName());
     }
