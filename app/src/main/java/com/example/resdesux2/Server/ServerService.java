@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.resdesux2.Models.Change2Listener;
 import com.example.resdesux2.Models.ChangeListener;
 import com.example.resdesux2.Models.User;
 
@@ -51,23 +52,25 @@ public class ServerService extends Service {
     // change listeners
     private ChangeListener<Boolean> connectedListener;
     private ChangeListener<Boolean> connectionFailedListener;
-    private ChangeListener<Double> scoreListener;
+    private Change2Listener<Integer, Integer> scoreListener;
     private ChangeListener<Integer> loginListener;
 
     // single listeners
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
     private ArrayList<ChangeListener<User>> currentUserListener = new ArrayList<>();
 
-    private double score = -1;
+    private User.Score score = null;
     private ArrayList<User> users = new ArrayList<>();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
-            // get or create SharedPreferences
+            // Get or create SharedPreferences
             sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
             server_IP = getServerIP();
+            // Set the current user to the last logged in, this is for the background and widgets
+            currentUserID = getLoggedInUser();
 
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
@@ -75,7 +78,6 @@ public class ServerService extends Service {
             // Run a task in the background to connect to the server
             connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
             connectTask.execute();
-
 
             isRunning = true;
         }
@@ -176,15 +178,22 @@ public class ServerService extends Service {
 
         switch (command) {
             case "score":
-                score = Double.parseDouble(arguments[1]);
+                String[] scores = arguments[1].split(",");
+
+                int _score = scores.length >= 2 ? Integer.parseInt(scores[0]) : (int) Double.parseDouble(scores[0]);
+
+                score = new User.Score(_score, scores.length >= 2 ? Integer.parseInt(scores[1]) : _score);
+
                 if (scoreListener != null)
-                    scoreListener.onChange(score);
+                    scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
                 break;
             case "user":
                 String[] currentUserData = arguments[1].split(",");
-                if (currentUserData.length != 4) break;
-                currentUser = new User(Integer.parseInt(currentUserData[0]), currentUserData[1],
-                        Double.parseDouble(currentUserData[2]), Integer.parseInt(currentUserData[3]));
+
+                // create a new user from the data. length 4 is the legacy 1 score approach and length 5 is the new two score approach
+                User _user = createUserFromData(currentUserData);
+                if (_user == null) break;
+                currentUser = _user;
 
                 // Update all the listeners and then delete them
                 for (ChangeListener<User> listener : currentUserListener) {
@@ -197,8 +206,10 @@ public class ServerService extends Service {
                 users = new ArrayList<>();
                 for (String incomingUser : incomingUsers) {
                     String[] userData = incomingUser.split(",");
-                    if (userData.length != 4) continue;
-                    users.add(new User(Integer.parseInt(userData[0]), userData[1], Double.parseDouble(userData[2]), Integer.parseInt(userData[3])));
+
+                    User user = createUserFromData(userData);
+                    if (user == null) continue;
+                    users.add(user);
                 }
 
                 // Update all the listeners and then delete them
@@ -209,8 +220,7 @@ public class ServerService extends Service {
                 break;
             case "login":
                 int loginId = Integer.parseInt(arguments[1]);
-                if (loginId != -1)
-                    setCurrentUserID(loginId);
+                setCurrentUserID(loginId);
                 if (loginListener != null)
                     loginListener.onChange(loginId);
                 break;
@@ -239,14 +249,15 @@ public class ServerService extends Service {
     }
 
     /**
-     * Set a listener that gets triggered constantly when the score of the user with ID 0 changes
+     * Set a listener that gets triggered constantly when the score of the logged in user changes
+     * The listener method called needs and int intensity and an int frequency scores.
      * @param listener a listener which has an onChange method taking a Double.
-     *                  Or a method that takes an Double and then write this::METHOD_NAME
+     *                  Or a method that takes two doubles and then write this::METHOD_NAME
      */
-    public void setScoreListener(ChangeListener<Double> listener) {
+    public void setScoreListener(Change2Listener<Integer, Integer> listener) {
         scoreListener = listener;
-        if (score != -1)
-            scoreListener.onChange(score);
+        if (score != null)
+            scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
     }
 
     /**
@@ -331,11 +342,12 @@ public class ServerService extends Service {
     /**
      * Sets the current user, !!this is the same as logging in.
      * As it requests the user and a listener on the score of the user
-     * @param currentUserID
+     * @param currentUserID the new ID of the user.
      */
-    public void setCurrentUserID(int currentUserID) {
-//        if (this.currentUserID == currentUserID) return;
-        this.currentUserID = currentUserID;
+    private void setCurrentUserID(int currentUserID) {
+        if (currentUserID == -1) return;
+
+        setLoggedInUser(currentUserID);
 
         // request the score listener for the new user and info about the new user
         String request = String.format(Locale.US, "listen_score: %d\nget_user: %d", this.currentUserID, this.currentUserID);
@@ -359,6 +371,34 @@ public class ServerService extends Service {
         sharedPreferencesServer.edit().putString("SERVER_IP", serverIP).apply();
         server_IP = serverIP;
         reconnect();
+    }
+
+    public int getLoggedInUser() {
+        return sharedPreferencesServer.getInt("USER", -1);
+    }
+    private void setLoggedInUser(int userID) {
+        currentUserID = userID;
+        sharedPreferencesServer.edit().putInt("USER", userID).apply();
+    }
+
+    private User createUserFromData(String[] userData) {
+        // The old legacy way with one score
+        if (userData.length == 4) {
+            int score = (int) Double.parseDouble(userData[2]);
+            return new User(Integer.parseInt(userData[0]),
+                    userData[1],
+                    score,
+                    score,
+                    Integer.parseInt(userData[3]));
+        } // The new approach with two different score dimensions
+        else if (userData.length == 5) {
+            return new User(Integer.parseInt(userData[0]),
+                    userData[1],
+                    Integer.parseInt(userData[2]),
+                    Integer.parseInt(userData[3]),
+                    Integer.parseInt(userData[4]));
+        }
+        return null;
     }
 
     public class ServiceBinder extends Binder {
