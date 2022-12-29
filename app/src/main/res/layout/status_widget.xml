@@ -1,0 +1,25 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.ResDesUx2App.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.ResDesUx2.AppWidgetContainer">
+
+
+    <TextView
+        android:id="@+id/appwidget_text"
+        style="@style/Widget.ResDesUx2App.AppWidget.InnerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/welcome_message"
+        android:text="@string/welcome_message"
+        android:textStyle="bold|italic"
+
+        android:textAlignment="center"
+
+        app:autoSizeTextType="uniform"
+        android:autoSizeTextType="uniform"/>
+</RelativeLayout>
