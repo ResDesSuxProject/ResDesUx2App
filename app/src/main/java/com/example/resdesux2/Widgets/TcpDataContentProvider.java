@@ -28,7 +28,6 @@ public class TcpDataContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         // Store the data in the content provider
         data = values.getAsString("data");
-//        getContext().getContentResolver().notifyChange(TCP_DATA_URI, null);
         return TCP_DATA_URI;
     }
 

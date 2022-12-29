@@ -14,7 +14,7 @@ public class UpdateWidgetService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Receive data from the TCP server and send a broadcast to update the widget
-        String[] data = {"Test", "Henk", "Baviaan", "Eyyo", "Heyy", "Doei", "Het werkt"};
+        String[] data = {"Frank", "Sil", "Henk", "User", "Floor", "Jochem"};
 
         Handler handler = new Handler();
 

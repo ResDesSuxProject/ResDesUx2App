@@ -21,15 +21,18 @@ public class StatusWidget extends AppWidgetProvider {
 
     private static final String TAG = "Widget";
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         CharSequence widgetText = context.getString(R.string.welcome_message);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.status_widget);
-        views.setTextViewText(R.id.appwidget_text, "Welcome " + " Frank");
 
-        Log.e(TAG, "updateAppWidget: Hoi");
+        String txt = getDataFromContentProvider(context);
+
+        Log.i(TAG, "updateWidget: " + txt);
+        views.setTextViewText(R.id.appwidget_text, widgetText + " " + txt);
+
+        appWidgetManager.updateAppWidget(appWidgetId, views);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -56,11 +59,7 @@ public class StatusWidget extends AppWidgetProvider {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, StatusWidget.class));
         for (int appWidgetId : appWidgetIds) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.status_widget);
-            String txt = getDataFromContentProvider(context);
-            Log.i(TAG, "updateWidget: " + txt);
-            views.setTextViewText(R.id.appwidget_text, txt);
-            appWidgetManager.updateAppWidget(appWidgetId, views);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
@@ -79,12 +78,9 @@ public class StatusWidget extends AppWidgetProvider {
         return null;
     }
 
-
-
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
-        Log.e(TAG, "onEnabled: Test");
     }
 
     @Override
