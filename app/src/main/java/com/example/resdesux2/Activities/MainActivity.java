@@ -20,6 +20,7 @@ public class MainActivity extends BoundActivity {
 
         // Assigns a click listener to the button
         findViewById(R.id.button_friends).setOnClickListener(this::friendsBtnClicked);
+        findViewById(R.id.button_progress).setOnClickListener(this::progressBtnClicked);
     }
 
     /**
@@ -30,6 +31,12 @@ public class MainActivity extends BoundActivity {
         // start the dashboard activity and navigate to it
         Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
         startActivity(intent);
+    }
+
+    private void progressBtnClicked(View view) {
+        // start the dashboard activity and navigate to it
+        Intent intent_info = new Intent(MainActivity.this, Info.class);
+        startActivity(intent_info);
     }
 
     @Override
