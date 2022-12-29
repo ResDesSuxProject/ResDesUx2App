@@ -1,17 +1,15 @@
 package com.example.resdesux2.Server;
 
-import android.app.AlertDialog;
+import android.app.ActivityManager;
+import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,8 +17,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.resdesux2.Fragments.ConnectionDialog;
 import com.example.resdesux2.R;
-
-import java.sql.Connection;
+import com.example.resdesux2.Widgets.StatusWidget;
+import com.example.resdesux2.Widgets.UpdateWidgetService;
 
 public class BoundActivity extends AppCompatActivity implements ConnectionDialog.ConnectionDialogListener {
     private static final String TAG = "BoundActivity";
@@ -59,14 +57,25 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         isConnected = false;
         connectionDialog = new ConnectionDialog();
 
-        Intent intent = new Intent(this, ServerService.class);
+        Intent startServerServiceIntent = new Intent(this, ServerService.class);
 
         // The server service is created if it wasn't before
         if (!isBound) {
-            startService(intent);
+            startService(startServerServiceIntent);
         }
 
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        bindService(startServerServiceIntent, connection, Context.BIND_AUTO_CREATE);
+
+        // Check if the widget is still running, if not update it. Only needed for development
+        if (!isServiceRunning(this, UpdateWidgetService.class)) {
+            Intent widgetIntent = new Intent(this, StatusWidget.class);
+            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+            int[] ids = AppWidgetManager.getInstance(getApplication())
+                    .getAppWidgetIds(new ComponentName(getApplication(), StatusWidget.class));
+            widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            sendBroadcast(widgetIntent);
+        }
     }
 
     /**
@@ -169,5 +178,21 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
      */
     public String getServerIP() {
         return isBound ? serverService.getServerIP() : "";
+    }
+
+    /**
+     * Test is a service is already running
+     * @param context the context in which it should be tested
+     * @param serviceClass the class of the service in question
+     * @return true or false depending if the service is running
+     */
+    public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

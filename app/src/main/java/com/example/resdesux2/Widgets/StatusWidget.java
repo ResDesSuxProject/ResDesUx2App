@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.RemoteViews;
+
+import androidx.core.content.ContextCompat;
 
 import com.example.resdesux2.R;
 
@@ -29,7 +32,6 @@ public class StatusWidget extends AppWidgetProvider {
 
         String txt = getDataFromContentProvider(context);
 
-        Log.i(TAG, "updateWidget: " + txt);
         views.setTextViewText(R.id.appwidget_text, widgetText + " " + txt);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -40,18 +42,21 @@ public class StatusWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.e(TAG, "onUpdate: Doei");
-
-        // start the service
-        context.startService(new Intent(context, UpdateWidgetService.class));
-
-        // Register the TcpDataContentObserver to observe changes to the content URI
-        context.getContentResolver().registerContentObserver(TCP_DATA_URI, true, new TcpDataContentObserver(context));
+        setupService(context);
 
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    private void setupService(Context context) {
+        // start the service
+//        context.startService(new Intent(context, UpdateWidgetService.class));
+        ContextCompat.startForegroundService(context, new Intent(context, UpdateWidgetService.class));
+
+        // Register the TcpDataContentObserver to observe changes to the content URI
+        context.getContentResolver().registerContentObserver(TCP_DATA_URI, true, new TcpDataContentObserver(context));
     }
 
     public static void updateWidget(Context context) {
@@ -76,6 +81,12 @@ public class StatusWidget extends AppWidgetProvider {
             return data;
         }
         return null;
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i(TAG, "onReceive: " + intent.getAction());
+        super.onReceive(context, intent);
     }
 
     @Override
