@@ -1,4 +1,4 @@
-package com.example.resdesux2.Widgets;
+package com.example.resdesux2.Server;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,17 +11,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.resdesux2.Activities.LoginActivity;
+import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 
-public class UpdateWidgetService extends Service {
+public class ForegroundService extends Service {
     public static final Uri TCP_DATA_URI = Uri.parse("content://com.example.resdesux2.Widgets");
     private static final String CHANNEL_ID = "ChannelID1";
-    private static final int NOTIFICATION_ID = 1;
+    private static final int NOTIFICATION_ID = 2;
     private NotificationCompat.Builder notificationBuilder;
 
 
@@ -32,25 +34,15 @@ public class UpdateWidgetService extends Service {
         Notification notification = createNotification(notificationBuilder, false);
         startForeground(NOTIFICATION_ID, notification);
 
-
-        String[] data = {"Frank", "Sil", "Henk", "User", "Floor", "Jochem"};
-
-        Handler handler = new Handler();
-
-        final Runnable r = new Runnable() {
-            public void run() {
-                ContentValues values = new ContentValues();
-                values.put("data", data[(int) Math.floor(Math.random() * data.length)]);
-                getContentResolver().insert(TCP_DATA_URI, values);
-                getContentResolver().notifyChange(TCP_DATA_URI, null);
-
-                handler.postDelayed(this, 5000);
-            }
-        };
-
-        handler.postDelayed(r, 1000);
-
         return START_STICKY;  // START_REDELIVER_INTENT
+    }
+
+    protected void updateWidget(User user) {
+        ContentValues values = new ContentValues();
+        values.put("user", user.transformToString());
+
+        getContentResolver().insert(TCP_DATA_URI, values);
+        getContentResolver().notifyChange(TCP_DATA_URI, null);
     }
 
     private Notification createNotification(NotificationCompat.Builder notificationBuilder, boolean connected) {
@@ -64,7 +56,7 @@ public class UpdateWidgetService extends Service {
                 .setOnlyAlertOnce(true)
                 .build();
     }
-    private void updateNotification(NotificationCompat.Builder notificationBuilder, boolean connected) {
+    protected void updateNotification(boolean connected) {
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.notify(NOTIFICATION_ID, createNotification(notificationBuilder, connected));
     }

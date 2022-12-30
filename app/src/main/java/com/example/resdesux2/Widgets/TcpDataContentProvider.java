@@ -5,29 +5,32 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.util.Log;
+
+import com.example.resdesux2.Models.User;
 
 public class TcpDataContentProvider extends ContentProvider {
     private static final Uri TCP_DATA_URI = Uri.parse("content://com.example.resdesux2.Widgets");
-    private String data;
+    private String userStr;
 
     @Override
     public boolean onCreate() {
-        // Initialize the content provider
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         // Return a Cursor with the data stored in the content provider
-        MatrixCursor cursor = new MatrixCursor(new String[]{"data"});
-        cursor.addRow(new Object[]{data});
+        MatrixCursor cursor = new MatrixCursor(new String[]{"user"});
+        cursor.addRow(new Object[]{userStr});
+
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         // Store the data in the content provider
-        data = values.getAsString("data");
+        userStr = values.getAsString("user");
         return TCP_DATA_URI;
     }
 

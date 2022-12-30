@@ -13,12 +13,12 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.resdesux2.Fragments.ConnectionDialog;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Widgets.StatusWidget;
-import com.example.resdesux2.Widgets.UpdateWidgetService;
 
 public class BoundActivity extends AppCompatActivity implements ConnectionDialog.ConnectionDialogListener {
     private static final String TAG = "BoundActivity";
@@ -61,21 +61,21 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
 
         // The server service is created if it wasn't before
         if (!isBound) {
-            startService(startServerServiceIntent);
+//            startService(startServerServiceIntent);
+            ContextCompat.startForegroundService(this, startServerServiceIntent);
         }
 
         bindService(startServerServiceIntent, connection, Context.BIND_AUTO_CREATE);
 
-        // Check if the widget is still running, if not update it. Only needed for development
-        if (!isServiceRunning(this, UpdateWidgetService.class)) {
-            Intent widgetIntent = new Intent(this, StatusWidget.class);
-            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        // Update the widget. Only needed for development
+        Intent widgetIntent = new Intent(this, StatusWidget.class);
+        widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
-            int[] ids = AppWidgetManager.getInstance(getApplication())
-                    .getAppWidgetIds(new ComponentName(getApplication(), StatusWidget.class));
-            widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-            sendBroadcast(widgetIntent);
-        }
+        int[] ids = AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), StatusWidget.class));
+        widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(widgetIntent);
+
     }
 
     /**

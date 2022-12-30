@@ -14,7 +14,9 @@ import android.widget.RemoteViews;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
+import com.example.resdesux2.Server.ServerService;
 
 /**
  * Implementation of App Widget functionality.
@@ -30,9 +32,14 @@ public class StatusWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.status_widget);
 
-        String txt = getDataFromContentProvider(context);
+        User currentUser = getDataFromContentProvider(context);
+        if (currentUser != null) {
+            views.setTextViewText(R.id.appwidget_text, widgetText + " " + currentUser.getUserName());
+            User.Score score = currentUser.getScore();
+            views.setTextViewText(R.id.intensityScore, "Intensity: " + score.getIntensityScore());
+            views.setTextViewText(R.id.frequencyScore, score.getFrequencyScore() + " :Frequency");
 
-        views.setTextViewText(R.id.appwidget_text, widgetText + " " + txt);
+        }
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
 
@@ -53,7 +60,7 @@ public class StatusWidget extends AppWidgetProvider {
     private void setupService(Context context) {
         // start the service
 //        context.startService(new Intent(context, UpdateWidgetService.class));
-        ContextCompat.startForegroundService(context, new Intent(context, UpdateWidgetService.class));
+        ContextCompat.startForegroundService(context, new Intent(context, ServerService.class));
 
         // Register the TcpDataContentObserver to observe changes to the content URI
         context.getContentResolver().registerContentObserver(TCP_DATA_URI, true, new TcpDataContentObserver(context));
@@ -68,24 +75,23 @@ public class StatusWidget extends AppWidgetProvider {
         }
     }
 
-    private static String getDataFromContentProvider(Context context) {
+    private static User getDataFromContentProvider(Context context) {
         // Query the content provider for the data
         Cursor cursor = context.getContentResolver().query(TCP_DATA_URI, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            int dataColumn = cursor.getColumnIndex("data");
-            String data = "";
-            if (dataColumn > -1) {
-                data = cursor.getString(dataColumn);
-            }
+
+            int userColumn = cursor.getColumnIndex("user");
+            String userStr = userColumn >= 0 ? cursor.getString(userColumn) : "";
+            User user = User.generateFromString(userStr);
             cursor.close();
-            return data;
+            return user != null ? user : new User(-1, "", 0, 0, 20);
         }
         return null;
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "onReceive: " + intent.getAction());
+//        Log.i(TAG, "onReceive: " + intent.getAction());
         super.onReceive(context, intent);
     }
 
