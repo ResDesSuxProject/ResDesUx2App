@@ -69,8 +69,6 @@ public class StatusWidget extends AppWidgetProvider {
             currentView.setTextViewText(R.id.appwidget_welcome, widgetText + " " + currentUser.getUserName());
 
             User.Score score = currentUser.getScore();
-            currentView.setTextViewText(R.id.intensityScore, "Intensity: " + score.getIntensityScore());
-            currentView.setTextViewText(R.id.frequencyScore, score.getFrequencyScore() + " :Frequency");
 
             int index = score.getIntensityScore()/3 + score.getFrequencyScore()/3;
             if (index > dogImages.length) index = dogImages.length - 1;
