@@ -17,6 +17,7 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
     private final int serverPort;
     private final Handler handler;
     private final ChangeListener<Socket> connectToServerListener;
+    private int sleepTime = 2000;
 
     public ConnectTask(String serverAddress, int serverPort, ChangeListener<Socket> connectToServerListener, Handler handler) {
         this.serverAddress = serverAddress;
@@ -34,6 +35,7 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
 
     @Override
     protected Socket doInBackground(Void... voids) {
+        int attempts = 0;
         while(!isCancelled()) {
             try {
                 // Create a socket and connect to the server
@@ -50,9 +52,13 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
             handler.sendMessage(message);
 
             try {
-                Thread.sleep(2000);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 break;
+            }
+            attempts++;
+            if (attempts % 5 == 0 && attempts <= 40) {
+                sleepTime *= 2;
             }
         }
         return null;
