@@ -11,17 +11,20 @@
         style="@style/Widget.ResDesUx2App.AppWidget.InnerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         android:layout_centerHorizontal="true"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+
+        android:autoSizeTextType="uniform"
+
         android:contentDescription="@string/welcome_message"
+        android:maxLines="1"
         android:text="@string/welcome_message"
-        android:textStyle="bold|italic"
-
         android:textAlignment="center"
-
-        app:autoSizeTextType="uniform"
-        android:autoSizeTextType="uniform"/>
+        android:textStyle="bold|italic"
+        app:autoSizeTextType="uniform" />
 
     <LinearLayout
         android:layout_width="match_parent"

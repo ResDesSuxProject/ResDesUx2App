@@ -5,10 +5,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.Settings;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -18,6 +17,10 @@ import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.ServerService;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -25,26 +28,53 @@ public class StatusWidget extends AppWidgetProvider {
     public static final Uri TCP_DATA_URI = Uri.parse("content://com.example.resdesux2.Widgets");
 
     private static final String TAG = "Widget";
+    private RemoteViews currentView;
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    // Declare the views
+    private static final Map<String, Integer> views;
+    static {
+        Map<String, Integer> _views = new HashMap<>();
+        _views.put("11", R.layout.status_widget_small);
+        _views.put("12", R.layout.status_widget_small);
+
+        _views.put("13", R.layout.status_widget_wide);
+        _views.put("14", R.layout.status_widget_wide);
+        _views.put("15", R.layout.status_widget_wide);
+
+        _views.put("*", R.layout.status_widget);
+
+        views = Collections.unmodifiableMap(_views);
+    }
+
+    void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         CharSequence widgetText = context.getString(R.string.welcome_message);
+
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.status_widget);
-
-        User currentUser = getDataFromContentProvider(context);
-        if (currentUser != null) {
-            views.setTextViewText(R.id.appwidget_text, widgetText + " " + currentUser.getUserName());
-            User.Score score = currentUser.getScore();
-            views.setTextViewText(R.id.intensityScore, "Intensity: " + score.getIntensityScore());
-            views.setTextViewText(R.id.frequencyScore, score.getFrequencyScore() + " :Frequency");
-
-        }
-
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        currentView = getRemoteViews(context, appWidgetManager, appWidgetId);
+        fillViewWithUserData(context, widgetText);
 
         // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.updateAppWidget(appWidgetId, currentView);
+    }
+
+    private void fillViewWithUserData(Context context, CharSequence widgetText) {
+        // Fill in the data fo the user
+        User currentUser = getDataFromContentProvider(context);
+        if (currentUser != null) {
+            currentView.setTextViewText(R.id.appwidget_text, widgetText + " " + currentUser.getUserName());
+            User.Score score = currentUser.getScore();
+            currentView.setTextViewText(R.id.intensityScore, "Intensity: " + score.getIntensityScore());
+            currentView.setTextViewText(R.id.frequencyScore, score.getFrequencyScore() + " :Frequency");
+
+        }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        updateAppWidget(context, appWidgetManager, appWidgetId);
+
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
     @Override
@@ -59,20 +89,10 @@ public class StatusWidget extends AppWidgetProvider {
 
     private void setupService(Context context) {
         // start the service
-//        context.startService(new Intent(context, UpdateWidgetService.class));
         ContextCompat.startForegroundService(context, new Intent(context, ServerService.class));
 
         // Register the TcpDataContentObserver to observe changes to the content URI
         context.getContentResolver().registerContentObserver(TCP_DATA_URI, true, new TcpDataContentObserver(context));
-    }
-
-    public static void updateWidget(Context context) {
-        // Update the widget with the received data
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, StatusWidget.class));
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
-        }
     }
 
     private static User getDataFromContentProvider(Context context) {
@@ -89,10 +109,35 @@ public class StatusWidget extends AppWidgetProvider {
         return null;
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-//        Log.i(TAG, "onReceive: " + intent.getAction());
-        super.onReceive(context, intent);
+    /**
+     * Determine appropriate view based on row or column provided.
+     * @return the new Remote view of the appropriate dimension.
+     */
+    private RemoteViews getRemoteViews(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        // See the dimensions and
+        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+
+        // Get min width and height.
+        int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+
+        // First find out rows and columns based on width provided.
+        int rows = getCellsForSize(minHeight);
+        int columns = getCellsForSize(minWidth);
+
+        String key = rows <= 1 ? "1" + columns : "*";
+        if (!views.containsKey(key) || views.get(key) == null) return new RemoteViews(context.getPackageName(), R.layout.status_widget);
+
+       return new RemoteViews(context.getPackageName(), views.get(key));
+    }
+
+    /**
+     * Returns number of cells needed for given size of the widget.
+     * @param size Widget size in dp.
+     * @return Size in number of cells.
+     */
+    private static int getCellsForSize(double size) {
+        return (int) Math.round((size + 30.0) / 70.0);
     }
 
     @Override
