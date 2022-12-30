@@ -5,7 +5,7 @@
     android:initialLayout="@layout/status_widget"
     android:minWidth="100dp"
     android:minHeight="50dp"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:previewImage="@drawable/dagoestaand4"
     android:previewLayout="@layout/status_widget"
     android:resizeMode="horizontal|vertical"
     android:targetCellWidth="3"

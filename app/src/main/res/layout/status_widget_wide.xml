@@ -26,5 +26,6 @@
         android:gravity="center"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:maxWidth="150dp" />
+        android:maxWidth="150dp"
+        android:text="@string/appwidget_welcome"/>
 </RelativeLayout>

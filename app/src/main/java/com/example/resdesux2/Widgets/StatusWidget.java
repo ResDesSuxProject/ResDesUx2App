@@ -65,7 +65,7 @@ public class StatusWidget extends AppWidgetProvider {
         CharSequence widgetText = context.getString(R.string.appwidget_welcome);
         User currentUser = getDataFromContentProvider(context);
 
-        if (currentUser != null) {
+        if (currentUser != null && currentUser.getID() != -1) {
             currentView.setTextViewText(R.id.appwidget_welcome, widgetText + " " + currentUser.getUserName());
 
             User.Score score = currentUser.getScore();
@@ -75,7 +75,8 @@ public class StatusWidget extends AppWidgetProvider {
             else if (index < 0) index = 0;
 
             currentView.setImageViewResource(R.id.appwidget_image, dogImages[index]);
-
+        } else {
+            currentView.setImageViewResource(R.id.appwidget_image, R.drawable.baseline_signal_wifi_connected_no_internet_4_24_black);
         }
     }
 
