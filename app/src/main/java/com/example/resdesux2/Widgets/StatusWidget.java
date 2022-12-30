@@ -34,10 +34,9 @@ public class StatusWidget extends AppWidgetProvider {
     private static final Map<String, Integer> views;
     static {
         Map<String, Integer> _views = new HashMap<>();
-        _views.put("11", R.layout.status_widget_small);
         _views.put("12", R.layout.status_widget_small);
+        _views.put("13", R.layout.status_widget_small);
 
-        _views.put("13", R.layout.status_widget_wide);
         _views.put("14", R.layout.status_widget_wide);
         _views.put("15", R.layout.status_widget_wide);
 
@@ -46,26 +45,38 @@ public class StatusWidget extends AppWidgetProvider {
         views = Collections.unmodifiableMap(_views);
     }
 
+    // load the images
+    private static final int[] dogImages = {
+            R.drawable.dagoestaand1, R.drawable.dagoestaand2, R.drawable.dagoestaand3,
+            R.drawable.dagoestaand4, R.drawable.dagoestaand5, R.drawable.dagoestaand6
+    };
+
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-
-        CharSequence widgetText = context.getString(R.string.welcome_message);
-
         // Construct the RemoteViews object
         currentView = getRemoteViews(context, appWidgetManager, appWidgetId);
-        fillViewWithUserData(context, widgetText);
+        fillViewWithUserData(context);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, currentView);
     }
 
-    private void fillViewWithUserData(Context context, CharSequence widgetText) {
+    private void fillViewWithUserData(Context context) {
         // Fill in the data fo the user
+        CharSequence widgetText = context.getString(R.string.appwidget_welcome);
         User currentUser = getDataFromContentProvider(context);
+
         if (currentUser != null) {
-            currentView.setTextViewText(R.id.appwidget_text, widgetText + " " + currentUser.getUserName());
+            currentView.setTextViewText(R.id.appwidget_welcome, widgetText + " " + currentUser.getUserName());
+
             User.Score score = currentUser.getScore();
             currentView.setTextViewText(R.id.intensityScore, "Intensity: " + score.getIntensityScore());
             currentView.setTextViewText(R.id.frequencyScore, score.getFrequencyScore() + " :Frequency");
+
+            int index = score.getIntensityScore()/3 + score.getFrequencyScore()/3;
+            if (index > dogImages.length) index = dogImages.length - 1;
+            else if (index < 0) index = 0;
+
+            currentView.setImageViewResource(R.id.appwidget_image, dogImages[index]);
 
         }
     }

@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/appwidget_text"
+        android:id="@+id/appwidget_welcome"
         style="@style/Widget.ResDesUx2App.AppWidget.InnerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="2dp"
 
         android:autoSizeTextType="uniform"
 
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:layout_below="@+id/appwidget_text"
+        android:layout_below="@id/appwidget_welcome"
         android:gravity="center">
 
         <TextView
@@ -38,15 +38,24 @@
             android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10"
             android:layout_marginEnd="10dp"/>
         <TextView
             android:id="@+id/frequencyScore"
             android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="10"
             android:layout_marginStart="10dp"/>
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/appwidget_image"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_below="@id/appwidget_welcome"
+        android:layout_margin="16dp"
+        android:src="@drawable/baseline_signal_wifi_connected_no_internet_4_24_black"
+        android:contentDescription="@string/state_visualization" />
 </RelativeLayout>
