@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.ResDesUx2App.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.ResDesUx2.AppWidgetContainer"
+    android:id="@+id/appwidget_parent">
+
+    <ImageView
+        android:id="@+id/appwidget_image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="100dp"
+        android:src="@drawable/dagoestaand3"
+        android:contentDescription="@string/state_visualization"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/appwidget_welcome"
+        />
+
+    <TextView
+        android:id="@+id/appwidget_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.ResDesUx2App.AppWidget.InnerView"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:maxWidth="150dp"
+        android:text="@string/appwidget_welcome"/>
+</RelativeLayout>

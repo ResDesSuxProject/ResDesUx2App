@@ -32,7 +32,7 @@ public class User {
     }
 
     public String getUserName() {
-        return userName;
+        return userName == null ? "" : userName;
     }
 
     public Score getScore() {
@@ -43,11 +43,25 @@ public class User {
         return age;
     }
 
+    public String transformToString() {
+        return ID + "," + userName + "," + intensityScore + "," + frequencyScore + "," + age;
+    }
+    public static User generateFromString(String userStr) {
+        if (userStr == null) return null;
+        String[] userData = userStr.split(",");
+        if (userData.length != 5) return null;
+        return new User(Integer.parseInt(userData[0]),
+                userData[1],
+                Integer.parseInt(userData[2]),
+                Integer.parseInt(userData[3]),
+                Integer.parseInt(userData[4]));
+    }
+
     public void setID(int ID) {
         this.ID = ID;
     }
 
-    public void setUserName(String userName) {
+    public void setUserName(@NonNull String userName) {
         this.userName = userName;
     }
 
@@ -64,6 +78,10 @@ public class User {
 
         if (frequencyScore != -1)
             this.frequencyScore = frequencyScore;
+    }
+    public void setScore(Score score) {
+        intensityScore = score.getIntensityScore();
+        frequencyScore = score.getFrequencyScore();
     }
 
     public void setAge(int age) {
