@@ -71,7 +71,7 @@ public class StatusWidget extends AppWidgetProvider {
             User.Score score = currentUser.getScore();
 
             int index = score.getIntensityScore()/3 + score.getFrequencyScore()/3;
-            if (index > dogImages.length) index = dogImages.length - 1;
+            if (index >= dogImages.length) index = dogImages.length - 1;
             else if (index < 0) index = 0;
 
             currentView.setImageViewResource(R.id.appwidget_image, dogImages[index]);
