@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ResDesUx2</string>
+    <string name="app_name">Pettivity</string>
     <string name="back_to_the_my_score">Back to the my score</string>
     <string name="user_status_txt">User status</string>
     <string name="settings">Settings</string>
@@ -7,10 +7,15 @@
     <string name="can_not_connect_server">Couldn\'t connect to server</string>
     <string name="not_connected">Not connected</string>
     <string name="welcome_message">Welcome</string>
+    <string name="appwidget_welcome">Hello</string>
     <string name="username">Username</string>
     <string name="enter_your_username">Enter your username:</string>
     <string name="password">Password</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="LoginBtn">Login</string>
     <string name="not_connected_message">Not connected to the server</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
+    <string name="connected_message">Connected to the server</string>
+    <string name="state_visualization">State visualization</string>
 </resources>

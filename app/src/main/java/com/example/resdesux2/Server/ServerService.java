@@ -24,7 +24,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ServerService extends Service {
+public class ServerService extends ForegroundService {
     private static final String TAG = "Server Service";
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
@@ -66,11 +66,13 @@ public class ServerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Only create a new Thread when it is just starting up
         if (!isRunning) {
+            super.onStartCommand(intent, flags, startId);
             // Get or create SharedPreferences
             sharedPreferencesServer = getSharedPreferences("SERVER_PREFERENCE", MODE_PRIVATE);
             server_IP = getServerIP();
             // Set the current user to the last logged in, this is for the background and widgets
             currentUserID = getLoggedInUser();
+            currentUser = new User(-1, "", 0, 0, 20);
 
             // Create a new Handler on the UI thread so we can communicate with the other thread
             mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
@@ -80,6 +82,7 @@ public class ServerService extends Service {
             connectTask.execute();
 
             isRunning = true;
+
         }
         return START_STICKY;
     }
@@ -108,10 +111,10 @@ public class ServerService extends Service {
 
         // Send a message to the server which includes name and a listener for the score
         String request = "name: Mobile client " + socket.getLocalSocketAddress().toString().replace("/", "").replace(":", ";") + "\n";
-        if (currentUserID != -1)
+        if (currentUserID != -1) {
             request += "listen_score: " + currentUserID;
-        if (currentUserListener.size() > 0 && currentUser != null)
             request += "\nget_user: " + currentUserID;
+        }
         new WriteToServer(request, writer, mainThreadHandler).start();
 
         Log.i(TAG, "connectToServer: Connected to server " + socket.getRemoteSocketAddress());
@@ -120,6 +123,9 @@ public class ServerService extends Service {
         if (connectedListener != null) {
             connectedListener.onChange(true);
         }
+
+        // Update the notification to reflect the current state
+        updateNotification(true);
     }
 
     /**
@@ -186,6 +192,9 @@ public class ServerService extends Service {
 
                 if (scoreListener != null)
                     scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
+
+                currentUser.setScore(score);
+                updateWidget(currentUser);
                 break;
             case "user":
                 String[] currentUserData = arguments[1].split(",");
@@ -194,6 +203,7 @@ public class ServerService extends Service {
                 User _user = createUserFromData(currentUserData);
                 if (_user == null) break;
                 currentUser = _user;
+                updateWidget(currentUser);
 
                 // Update all the listeners and then delete them
                 for (ChangeListener<User> listener : currentUserListener) {
@@ -296,8 +306,11 @@ public class ServerService extends Service {
      * Reconnects to the server and stops the listenerThread
      */
     private void reconnect(){
-        // disconnect everything first
+        // Reflect the state in the notification
         isConnected = false;
+        updateNotification(false);
+
+        // Disconnect everything first
         if (listenerThread != null) listenerThread.interrupt();
         if (connectTask != null) connectTask.cancel(true);
 
@@ -323,7 +336,6 @@ public class ServerService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (socket != null && socket.isConnected()) {
             // Close the socket when done
             try {
@@ -333,6 +345,7 @@ public class ServerService extends Service {
             }
         }
         Toast.makeText(this, "Service stopped", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
     }
 
     public int getCurrentUserID() {
