@@ -36,4 +36,5 @@
         android:layout_margin="16dp"
         android:src="@drawable/dagoestaand4"
         android:contentDescription="@string/state_visualization" />
+
 </RelativeLayout>

@@ -30,18 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/main_welcome_message" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="368dp"
-        android:layout_height="209dp"
-        android:layout_marginTop="136dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_friends"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.627"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sunnywunnie" />
-
     <Button
         android:id="@+id/button_friends"
         android:layout_width="wrap_content"
@@ -53,5 +41,17 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="30dp"
          />
+
+    <ImageView
+        android:id="@+id/my_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_friends"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scoreView"
+        android:contentDescription="@string/state_visualization" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
