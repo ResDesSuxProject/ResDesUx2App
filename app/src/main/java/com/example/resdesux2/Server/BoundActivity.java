@@ -113,6 +113,7 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         super.onStop();
 
         if (isBound) {
+            serverService.removeScoreListener();
             unbindService(connection);
             isBound = false;
         }
