@@ -269,6 +269,9 @@ public class ServerService extends ForegroundService {
         if (score != null)
             scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
     }
+    public void removeScoreListener() {
+        scoreListener = null;
+    }
 
     /**
      * Request users from the server and Set a listener that gets triggered once the users are received
