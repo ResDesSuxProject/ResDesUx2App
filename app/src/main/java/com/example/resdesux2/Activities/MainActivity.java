@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.resdesux2.HelperClasses.VisualizationManager;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.BoundActivity;
@@ -56,9 +57,9 @@ public class MainActivity extends BoundActivity {
                 intensityScore, frequencyScore));
 
         // Show gif with rounded corners and fade
-        ImageView imageView = (ImageView) findViewById(R.id.my_image_view);
+        ImageView imageView = findViewById(R.id.my_image_view);
         Glide.with(this)
-                .load(R.drawable.dagoesleep1)
+                .load(VisualizationManager.getVideo(intensityScore, frequencyScore))
                 .transform(new CenterCrop(),new RoundedCorners(14))
                 .transition(withCrossFade(new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()))
                 .into(imageView);
