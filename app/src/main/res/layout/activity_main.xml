@@ -31,16 +31,16 @@
         app:layout_constraintTop_toBottomOf="@id/main_welcome_message" />
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="368dp"
-        android:layout_height="209dp"
-        android:layout_marginTop="136dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationFragmentContainer"
+        android:id="@+id/my_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@id/navigationFragmentContainer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.627"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sunnywunnie" />
+        app:layout_constraintTop_toBottomOf="@id/scoreView"
+        android:contentDescription="@string/state_visualization" />
 
     <FrameLayout
         android:id="@+id/navigationFragmentContainer"
@@ -49,17 +49,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
-
-    <ImageView
-        android:id="@+id/my_image_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_friends"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scoreView"
-        android:contentDescription="@string/state_visualization" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
