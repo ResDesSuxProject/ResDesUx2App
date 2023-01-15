@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.resdesux2.Activities.MainActivity;
 import com.example.resdesux2.Fragments.ConnectionDialog;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Widgets.StatusWidget;
@@ -194,5 +195,12 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
             }
         }
         return false;
+    }
+
+
+    protected void navigateTo(Class<?> toClass) {
+        // start the dashboard activity and navigate to it
+        Intent intent_info = new Intent(this, toClass);
+        startActivity(intent_info);
     }
 }
