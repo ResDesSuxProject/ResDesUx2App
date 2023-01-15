@@ -1,17 +1,13 @@
 package com.example.resdesux2.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.example.resdesux2.NavigationFragment;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.BoundActivity;
 
-public class Info extends BoundActivity {
+public class InfoActivity extends BoundActivity {
 
     @SuppressLint("MissingInflatedId")
     @Override

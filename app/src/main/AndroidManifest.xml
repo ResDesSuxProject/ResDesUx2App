@@ -63,7 +63,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Activities.Info"
+            android:name=".Activities.InfoActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

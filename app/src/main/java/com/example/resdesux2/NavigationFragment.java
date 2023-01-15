@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.resdesux2.Activities.DashboardActivity;
-import com.example.resdesux2.Activities.Info;
+import com.example.resdesux2.Activities.InfoActivity;
 import com.example.resdesux2.Activities.MainActivity;
 import com.example.resdesux2.Models.BottomNavigate;
 
@@ -109,7 +109,7 @@ public class NavigationFragment extends Fragment {
                 bottomNavigate.navigateTo(MainActivity.class);
                 break;
             case Insight:
-                bottomNavigate.navigateTo(Info.class);
+                bottomNavigate.navigateTo(InfoActivity.class);
                 break;
         }
     }
