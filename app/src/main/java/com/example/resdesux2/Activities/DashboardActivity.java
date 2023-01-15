@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.resdesux2.NavigationFragment;
 import com.example.resdesux2.Server.BoundActivity;
 import com.example.resdesux2.HelperClasses.UserListAdaptor;
 import com.example.resdesux2.Models.User;
@@ -21,7 +22,9 @@ public class DashboardActivity extends BoundActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        findViewById(R.id.button_friends_back_to_main).setOnClickListener(this::goBack);  //VAN main NAAR friends
+        NavigationFragment navigationFragment = NavigationFragment.newInstance(NavigationFragment.Options.Friends, this::navigateTo);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.navigationFragmentContainer, navigationFragment).commit();
     }
 
     @Override
@@ -42,10 +45,5 @@ public class DashboardActivity extends BoundActivity {
 
         // Set the ArrayAdapter as the adapter for the ListView
         listView.setAdapter(userListAdaptor);
-    }
-
-    private void goBack(View view) {
-        Intent intent_friends_back_to_main = new Intent(DashboardActivity.this, MainActivity.class);
-        startActivity(intent_friends_back_to_main);
     }
 }
