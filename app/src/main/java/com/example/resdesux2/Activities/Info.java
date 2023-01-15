@@ -18,11 +18,18 @@ public class Info extends AppCompatActivity {
         setContentView(R.layout.activity_info);
         // Assigns a click listener to the button
         findViewById(R.id.button_info_to_main).setOnClickListener(this::InfoBackBtnClicked);
+        findViewById(R.id.button_info_to_friends).setOnClickListener(this::InfoBackBtnFriendsClicked);
     }
 
     private void InfoBackBtnClicked(View view) {
         // start the dashboard activity and navigate to it
         Intent intent = new Intent(Info.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void InfoBackBtnFriendsClicked(View view) {
+        // start the dashboard activity and navigate to it
+        Intent intent = new Intent(Info.this, DashboardActivity.class);
         startActivity(intent);
     }
 }
