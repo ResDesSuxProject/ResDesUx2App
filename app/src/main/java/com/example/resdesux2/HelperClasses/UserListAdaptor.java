@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class UserListAdaptor extends ArrayAdapter<User> {
-    private static final int[] dogsImages = {
-            R.drawable.dagoestaand1, R.drawable.dagoestaand2, R.drawable.dagoestaand3,
-            R.drawable.dagoestaand4, R.drawable.dagoestaand5, R.drawable.dagoestaand6
-    };
     public UserListAdaptor(@NonNull Context context, int resource, @NonNull ArrayList<User> objects) {
         super(context, resource, objects);
     }
@@ -54,11 +50,7 @@ public class UserListAdaptor extends ArrayAdapter<User> {
 
         // Fill the image with the correct Dog
         ImageView doggoState = currentItemView.findViewById(R.id.imageIcon);
-        int index = (score / 10);
-        //TODO update dit
-        index = Math.max(0, index);
-        index = Math.min(dogsImages.length-1, index);
-        doggoState.setImageResource(dogsImages[index]);
+        doggoState.setImageResource(VisualizationManager.getImage(currentUser.getScore()));
 
         // Then return the recyclable view
         return currentItemView;

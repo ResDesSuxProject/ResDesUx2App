@@ -6,13 +6,22 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.AppWidgetTarget;
+import com.bumptech.glide.request.target.NotificationTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.example.resdesux2.HelperClasses.VisualizationManager;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.ServerService;
@@ -74,7 +83,7 @@ public class StatusWidget extends AppWidgetProvider {
             if (index >= dogImages.length) index = dogImages.length - 1;
             else if (index < 0) index = 0;
 
-            currentView.setImageViewResource(R.id.appwidget_image, dogImages[index]);
+            currentView.setImageViewResource(R.id.appwidget_image, VisualizationManager.getImage(currentUser.getScore())); // R.drawable.dagoesleep1);//
         } else {
             currentView.setImageViewResource(R.id.appwidget_image, R.drawable.baseline_signal_wifi_connected_no_internet_4_24_black);
         }

@@ -96,6 +96,8 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         isConnected = true;
         failedConnection = false;
         invalidateOptionsMenu();
+
+        serverService.setScoreListener(this::onScoreChange);
     }
     /**
      * called from the server service when the connect task failed to connect to the server
@@ -114,6 +116,7 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         super.onStop();
 
         if (isBound) {
+            serverService.removeScoreListener(this::onScoreChange);
             unbindService(connection);
             isBound = false;
         }
@@ -197,10 +200,13 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         return false;
     }
 
-
     protected void navigateTo(Class<?> toClass) {
         // start the dashboard activity and navigate to it
         Intent intent_info = new Intent(this, toClass);
         startActivity(intent_info);
+    }
+
+    protected void onScoreChange(int intensityScore, int frequencyScore) {
+
     }
 }
