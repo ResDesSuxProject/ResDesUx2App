@@ -10,12 +10,14 @@ public class VisualizationManager {
             {R.drawable.dagoestaand5, R.drawable.dagoestaand6}
     };
     public static int[][] VIDEOS = {
-            {R.drawable.dagoesleep1}
+            {R.drawable.videodagoesleep1, R.drawable.videodagoerest1, R.drawable.videodagoestaand1},
+            {R.drawable.videodagoesleep3, R.drawable.videodagoerest3, R.drawable.videodagoestaand3},
+            {R.drawable.videodagoesleep4, R.drawable.videodagoerest5, R.drawable.videodagoestaand5},
     };
 
     public static int getVideo(int intensity, int frequency) {
-        intensity = clamp(intensity, VIDEOS.length - 1);
-        frequency = clamp(frequency, VIDEOS[intensity].length - 1);
+        intensity = clamp(intensity/2, VIDEOS.length - 1);
+        frequency = clamp(frequency/2, VIDEOS[intensity].length - 1);
         return VIDEOS[intensity][frequency];
     }
 

@@ -1,6 +1,5 @@
 package com.example.resdesux2.Server;
 
-import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -52,7 +51,7 @@ public class ServerService extends ForegroundService {
     // change listeners
     private ChangeListener<Boolean> connectedListener;
     private ChangeListener<Boolean> connectionFailedListener;
-    private Change2Listener<Integer, Integer> scoreListener;
+    private final ArrayList<Change2Listener<Integer, Integer>> scoreListeners = new ArrayList<>();
     private ChangeListener<Integer> loginListener;
 
     // single listeners
@@ -182,16 +181,21 @@ public class ServerService extends ForegroundService {
         if (arguments.length >= 2)
             arguments[1] = arguments[1].trim();
 
+        Log.i(TAG, "hoi");
         switch (command) {
             case "score":
+                Log.i(TAG, "hoi2");
                 String[] scores = arguments[1].split(",");
 
                 int _score = scores.length >= 2 ? Integer.parseInt(scores[0]) : (int) Double.parseDouble(scores[0]);
 
                 score = new User.Score(_score, scores.length >= 2 ? Integer.parseInt(scores[1]) : _score);
-
-                if (scoreListener != null)
-                    scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
+                Log.i(TAG, "processIncoming: " + scoreListeners);
+                if (scoreListeners.size() > 0) {
+                    for (Change2Listener<Integer, Integer> listener : scoreListeners){
+                        listener.onChange(score.getIntensityScore(), score.getFrequencyScore());
+                    }
+                }
 
                 currentUser.setScore(score);
                 updateWidget(currentUser);
@@ -265,12 +269,14 @@ public class ServerService extends ForegroundService {
      *                  Or a method that takes two doubles and then write this::METHOD_NAME
      */
     public void setScoreListener(Change2Listener<Integer, Integer> listener) {
-        scoreListener = listener;
+        if (!scoreListeners.contains(listener))
+            scoreListeners.add(listener);
+
         if (score != null)
-            scoreListener.onChange(score.getIntensityScore(), score.getFrequencyScore());
+            listener.onChange(score.getIntensityScore(), score.getFrequencyScore());
     }
-    public void removeScoreListener() {
-        scoreListener = null;
+    public void removeScoreListener(Change2Listener<Integer, Integer> listener) {
+        scoreListeners.remove(listener);
     }
 
     /**

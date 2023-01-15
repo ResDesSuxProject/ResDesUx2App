@@ -39,11 +39,12 @@ public class MainActivity extends BoundActivity {
         super.onConnected(connected);
 
         // Example of how you can listen to a score change
-        serverService.setScoreListener(this::onScoreChange);
         serverService.getCurrentUser(this::onUserRetrieved);
     }
 
-    private void onScoreChange(int intensityScore, int frequencyScore) {
+    @Override
+    protected void onScoreChange(int intensityScore, int frequencyScore) {
+        super.onScoreChange(intensityScore, frequencyScore);
         TextView textView = (TextView) findViewById(R.id.scoreView);
         textView.setText(String.format(Locale.US, "Your scores are %d and %d",
                 intensityScore, frequencyScore));
