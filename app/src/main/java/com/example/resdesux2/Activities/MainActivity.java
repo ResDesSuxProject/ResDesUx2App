@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.resdesux2.Models.User;
+import com.example.resdesux2.NavigationFragment;
 import com.example.resdesux2.R;
 import com.example.resdesux2.Server.BoundActivity;
 
@@ -18,25 +19,9 @@ public class MainActivity extends BoundActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Assigns a click listener to the button
-        findViewById(R.id.button_friends).setOnClickListener(this::friendsBtnClicked);
-        findViewById(R.id.button_progress).setOnClickListener(this::progressBtnClicked);
-    }
-
-    /**
-     * Called when the button friends has been clicked.
-     * It will navigate to the dashboard activity
-     */
-    private void friendsBtnClicked(View view) {
-        // start the dashboard activity and navigate to it
-        Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-        startActivity(intent);
-    }
-
-    private void progressBtnClicked(View view) {
-        // start the dashboard activity and navigate to it
-        Intent intent_info = new Intent(MainActivity.this, Info.class);
-        startActivity(intent_info);
+        NavigationFragment navigationFragment = NavigationFragment.newInstance(NavigationFragment.Options.Home, this::navigateTo);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.navigationFragmentContainer, navigationFragment).commit();
     }
 
     @Override

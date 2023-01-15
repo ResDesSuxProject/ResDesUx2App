@@ -7,29 +7,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.resdesux2.NavigationFragment;
 import com.example.resdesux2.R;
+import com.example.resdesux2.Server.BoundActivity;
 
-public class Info extends AppCompatActivity {
+public class Info extends BoundActivity {
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-        // Assigns a click listener to the button
-        findViewById(R.id.button_info_to_main).setOnClickListener(this::InfoBackBtnClicked);
-        findViewById(R.id.button_info_to_friends).setOnClickListener(this::InfoBackBtnFriendsClicked);
-    }
 
-    private void InfoBackBtnClicked(View view) {
-        // start the dashboard activity and navigate to it
-        Intent intent = new Intent(Info.this, MainActivity.class);
-        startActivity(intent);
-    }
-
-    private void InfoBackBtnFriendsClicked(View view) {
-        // start the dashboard activity and navigate to it
-        Intent intent = new Intent(Info.this, DashboardActivity.class);
-        startActivity(intent);
+        NavigationFragment navigationFragment = NavigationFragment.newInstance(NavigationFragment.Options.Insight, this::navigateTo);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.navigationFragmentContainer, navigationFragment).commit();
     }
 }
