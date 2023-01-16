@@ -1,5 +1,6 @@
 package com.example.resdesux2.Server;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -28,6 +29,7 @@ public class ServerService extends ForegroundService {
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
     public static final int MESSAGE_FAILED_CONNECTION = 98;
+    public static final int MESSAGE_SENSOR_CONNECTED = 101;
 
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
@@ -43,6 +45,10 @@ public class ServerService extends ForegroundService {
     private ConnectTask connectTask;
     ServerListenerThread listenerThread;
     SharedPreferences sharedPreferencesServer;
+
+    /* ---- Sensor ---- */
+    private boolean sensorConnecting = false;
+    private boolean sensorConnected = false;
 
     private int currentUserID = -1;
     private User currentUser = null;
@@ -84,6 +90,16 @@ public class ServerService extends ForegroundService {
 
         }
         return START_STICKY;
+    }
+
+    public void connectSensor(Context context) {
+        if (!sensorConnecting && !sensorConnected){
+            // Run the connection with the E4 sensor in the background
+//            new Thread(() ->
+//
+//            ).start();
+            sensorConnecting = true;
+        }
     }
 
     /**
@@ -157,6 +173,10 @@ public class ServerService extends ForegroundService {
                     connectionFailedListener.onChange(false);
                 }
                 break;
+
+            case MESSAGE_SENSOR_CONNECTED:
+                sensorConnected = true;
+                sensorConnecting = false;
         }
         return true;
     }

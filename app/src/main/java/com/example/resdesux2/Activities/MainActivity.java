@@ -45,6 +45,7 @@ public class MainActivity extends BoundActivity {
     @Override
     protected void onScoreChange(int intensityScore, int frequencyScore) {
         super.onScoreChange(intensityScore, frequencyScore);
+        if (isDestroyed) return;
         TextView textView = (TextView) findViewById(R.id.scoreView);
         textView.setText(String.format(Locale.US, "Your scores are %d and %d",
                 intensityScore, frequencyScore));

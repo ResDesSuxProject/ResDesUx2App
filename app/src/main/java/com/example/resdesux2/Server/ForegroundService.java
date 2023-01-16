@@ -47,7 +47,7 @@ public class ForegroundService extends Service {
 
     private Notification createNotification(NotificationCompat.Builder notificationBuilder, boolean connected) {
         Intent redirectIntent = new Intent(this, LoginActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, redirectIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, redirectIntent, PendingIntent.FLAG_IMMUTABLE);
         return notificationBuilder
                 .setContentText(connected ? getText(R.string.connected_message) : getText(R.string.not_connected_message))
                 .setSmallIcon(R.drawable.baseline_sports_handball_24)
