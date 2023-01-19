@@ -3,9 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Check whether Health Connect is installed or not -->
+    <uses-permission android:name="androidx.health.permission.HeartRate.READ" />
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -17,7 +22,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ResDesUx2"
         tools:targetApi="33">
+        <!-- Activity to show rationale of Health Connect permissions -->
+        <activity
+            android:name=".Activities.PermissionsRationaleActivity"
+            android:exported="true"
+            android:enabled="true">
+            <!-- (a) reference permissions resource -->
+            <meta-data
+                android:name="health_permissions"
+                android:resource="@array/health_permissions" />
+            <!-- (b) handle intent -->
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
 
+
+        <!-- </activity> -->
         <receiver
             android:name=".Widgets.StatusWidget"
             android:exported="false">
@@ -71,6 +92,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <service
             android:name=".Server.ServerService"
             android:singleUser="true" />

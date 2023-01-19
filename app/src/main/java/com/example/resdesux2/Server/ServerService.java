@@ -201,10 +201,8 @@ public class ServerService extends ForegroundService {
         if (arguments.length >= 2)
             arguments[1] = arguments[1].trim();
 
-        Log.i(TAG, "hoi");
         switch (command) {
             case "score":
-                Log.i(TAG, "hoi2");
                 String[] scores = arguments[1].split(",");
 
                 int _score = scores.length >= 2 ? Integer.parseInt(scores[0]) : (int) Double.parseDouble(scores[0]);
