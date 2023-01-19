@@ -30,6 +30,8 @@ public class InfoActivity extends BoundActivity {
     @Override
     protected void onScoreChange(int intensityScore, int frequencyScore) {
         super.onScoreChange(intensityScore, frequencyScore);
+        intensityScore = (int)(((float) intensityScore) / 6 * 100);
+        frequencyScore = (int)(((float) frequencyScore) / 6 * 100);
         NumberProgressBar bar_intensity = findViewById(R.id.determinateBar_intensity);
         NumberProgressBar bar_frequency = findViewById(R.id.determinateBar_frequency);
         bar_intensity.setProgress(intensityScore);
