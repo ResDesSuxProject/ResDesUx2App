@@ -10,9 +10,9 @@ public class VisualizationManager {
             {R.drawable.dagoestaand5, R.drawable.dagoestaand6}
     };
     public static int[][] VIDEOS = {
-            {R.drawable.videodagoesleep1, R.drawable.videodagoerest1, R.drawable.videodagoestaand1},
-            {R.drawable.videodagoesleep3, R.drawable.videodagoerest3, R.drawable.videodagoestaand3},
-            {R.drawable.videodagoesleep4, R.drawable.videodagoerest5, R.drawable.videodagoestaand5},
+            {R.drawable.dagoe1_1, R.drawable.dagoe2_1, R.drawable.dagoe3_1},
+            {R.drawable.dagoe1_2, R.drawable.dagoe2_2, R.drawable.dagoe3_2},
+            {R.drawable.dagoe1_3, R.drawable.dagoe2_3, R.drawable.dagoe3_3},
     };
 
     public static int getVideo(int intensity, int frequency) {
