@@ -45,15 +45,12 @@ public class MainActivity extends BoundActivity {
     @Override
     protected void onScoreChange(int intensityScore, int frequencyScore) {
         super.onScoreChange(intensityScore, frequencyScore);
-        TextView textView = (TextView) findViewById(R.id.scoreView);
-        textView.setText(String.format(Locale.US, "Your scores are %d and %d",
-                intensityScore, frequencyScore));
 
         // Show gif with rounded corners and fade
         ImageView imageView = findViewById(R.id.my_image_view);
         Glide.with(this)
                 .load(VisualizationManager.getVideo(intensityScore, frequencyScore))
-                .transform(new CenterCrop(),new RoundedCorners(14))
+//                .transform(new CenterCrop(),new RoundedCorners(14))
                 .transition(withCrossFade(new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()))
                 .into(imageView);
     }
