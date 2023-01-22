@@ -3,6 +3,7 @@ package com.example.resdesux2.Activities;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,8 +11,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.resdesux2.HelperClasses.ActiveWatchSensor;
 import com.example.resdesux2.HelperClasses.KotlinWatch;
 import com.example.resdesux2.HelperClasses.VisualizationManager;
+import com.example.resdesux2.HelperClasses.WatchSensor;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.NavigationFragment;
 import com.example.resdesux2.R;
@@ -19,10 +22,20 @@ import com.example.resdesux2.Server.BoundActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension;
+import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.request.DataReadRequest;
+import com.google.android.gms.fitness.result.DataReadResponse;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BoundActivity {
 //https://developers.google.com/fit/android/get-started#groovy-dsl
@@ -35,27 +48,28 @@ public class MainActivity extends BoundActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.navigationFragmentContainer, navigationFragment).commit();
 
-        GoogleSignInOptionsExtension fitnessOptions =
-                FitnessOptions.builder()
-                        .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
-                        .build();
-
-        GoogleSignInAccount googleSignInAccount =
-                GoogleSignIn.getAccountForExtension(this, fitnessOptions);
+        WatchSensor watchSensor = new WatchSensor(this);
+        ActiveWatchSensor activeWatchSensor = new ActiveWatchSensor(this);
+//        GoogleSignInOptionsExtension fitnessOptions =
+//                FitnessOptions.builder()
+//                        .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
+//                        .build();
 //
-        if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
-            GoogleSignIn.requestPermissions(
-                    this, // your activity
-                    1, // e.g. 1
-                    googleSignInAccount,
-                    fitnessOptions);
-        } else {
-            KotlinWatch kotlinWatch = new KotlinWatch(this, this);
-            new Thread(kotlinWatch::run).start();
-        }
+//        GoogleSignInAccount googleSignInAccount =
+//                GoogleSignIn.getAccountForExtension(this, fitnessOptions);
+////
+//        if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
+//            GoogleSignIn.requestPermissions(
+//                    this, // your activity
+//                    1, // e.g. 1
+//                    googleSignInAccount,
+//                    fitnessOptions);
 //        } else {
-//            Date currentTime = Calendar.getInstance().getTime();
+//            KotlinWatch kotlinWatch = new KotlinWatch(this, this);
+//            new Thread(kotlinWatch::run).start();
 //
+//
+//            Date currentTime = Calendar.getInstance().getTime();
 //            Task<DataReadResponse> response = Fitness.getHistoryClient(this, googleSignInAccount)
 //                    .readData(new DataReadRequest.Builder()
 //                            .read(DataType.TYPE_HEART_RATE_BPM)
