@@ -2,6 +2,10 @@ package com.example.pettivitywatch.server;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -30,7 +34,6 @@ public class ServerHandler implements ServerInteraction {
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
     public static final int MESSAGE_FAILED_CONNECTION = 98;
-    public static final int MESSAGE_SENSOR_CONNECTED = 101;
 
     // Server connections
     public Handler mainThreadHandler;
@@ -67,6 +70,7 @@ public class ServerHandler implements ServerInteraction {
     public ServerHandler(AppCompatActivity activity) {
         // Get or create SharedPreferences
         sharedPreferences = activity.getSharedPreferences("PettivityWatch", Context.MODE_PRIVATE);
+        setServerIP("192.168.43.207"); // because i am lazzy to type on such a small keyboard
         serverIp = getServerIP();
 
         currentUserID = getLoggedInUser();
@@ -124,7 +128,7 @@ public class ServerHandler implements ServerInteraction {
      * @return always true
      */
     private boolean handleMessage(Message message) {
-        Log.i(TAG, "handleMessage: " + message.getData());
+        Log.i(TAG, "handleMessage: " + message.what);
 
         switch (message.what) {
             // If the message is about data received from the server
@@ -263,6 +267,15 @@ public class ServerHandler implements ServerInteraction {
 
     }
 
+    /**
+     * Sets the connection failed listener which gets triggered everytime the connection
+     * to the server can't be established.
+     * Used in BoundActivity
+     * @param listener the listener which gets called with a Boolean
+     */
+    public void setConnectionFailedListener(ChangeListener<Boolean> listener) {
+        connectionFailedListener = listener;
+    }
 
     /**
      * Retrieves the server IP from the shared preferences (local storage)
@@ -281,6 +294,10 @@ public class ServerHandler implements ServerInteraction {
         sharedPreferences.edit().putString("SERVER_IP", serverIP).apply();
         this.serverIp = serverIP;
         reconnect();
+    }
+    private void setServerIP(String serverIP) {
+        sharedPreferences.edit().putString("SERVER_IP", serverIP).apply();
+        this.serverIp = serverIP;
     }
 
     public int getLoggedInUser() {

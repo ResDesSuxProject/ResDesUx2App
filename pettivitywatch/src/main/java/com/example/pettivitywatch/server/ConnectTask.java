@@ -3,6 +3,7 @@ package com.example.pettivitywatch.server;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.example.pettivitywatch.models.ChangeListener;
 
@@ -24,6 +25,7 @@ public class ConnectTask extends AsyncTask<Void, Void, Socket> {
 
         this.handler = handler;
         this.connectToServerListener = connectToServerListener;
+        Log.e(TAG, "ConnectTask: " + serverAddress + ":" + serverPort);
     }
 
     protected void onPostExecute(Socket socket) {
