@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.BoxInsetLayout
 import com.example.pettivitywatch.databinding.ActivityMainBinding
+import com.example.pettivitywatch.server.ServerHandler
 
 
 class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProvider {
@@ -17,12 +18,21 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
     private lateinit var testTextView: TextView
     private lateinit var background: BoxInsetLayout
 
+    private lateinit var serverHandler: ServerHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // initialize server:
+        serverHandler = ServerHandler(this)
+
+        // setup login fragment
+        val loginFragment: LoginFragment = LoginFragment()
+        loginFragment.setServerHandler(serverHandler)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loginFragment).commit()
 
         testTextView = findViewById(R.id.test)
         background = findViewById(R.id.background)

@@ -23,7 +23,7 @@ public class Sensors {
     private final SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            Log.v(TAG, "onSensorChanged: " + sensorEvent.values[0]);
+//            Log.v(TAG, "onSensorChanged: " + sensorEvent.values[0]);
             if (textView != null && sensorEvent.values[0] > 0) {
                 textView.setText(String.format("Heart rate: %.0f", sensorEvent.values[0]));
             }
