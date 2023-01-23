@@ -26,7 +26,7 @@
 
             android:layout_marginTop="20dp"
             android:textAlignment="center"
-            android:text="test"
+            android:text="Heart rate: "
             android:id="@+id/test"
             />
 

@@ -2,7 +2,6 @@ package com.example.pettivitywatch
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.TextView
 import com.example.pettivitywatch.databinding.ActivityMainBinding
 
 class MainActivity : Activity() {
@@ -17,16 +16,7 @@ class MainActivity : Activity() {
         setContentView(binding.root)
 
         sensors = Sensors(this)
-        sensors.register(findViewById<TextView>(R.id.test))
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        sensors.unregister()
+        sensors.register(findViewById(R.id.test))
     }
 
     override fun onDestroy() {
