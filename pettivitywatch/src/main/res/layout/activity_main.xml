@@ -20,5 +20,15 @@
             android:layout_height="wrap_content"
             android:text="@string/hello_world" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:text="test"
+            android:id="@+id/test"
+            />
+
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>
