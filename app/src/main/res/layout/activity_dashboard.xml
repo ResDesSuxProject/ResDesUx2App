@@ -23,9 +23,10 @@
     <TextView
         android:id="@+id/textView6"
         android:layout_width="333dp"
-        android:layout_height="49dp"
+        android:layout_height="wrap_content"
         android:text="These are the scores of your friends"
-        android:textSize="21sp"
+        android:textSize="@dimen/title_size"
+        android:textColor="?colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/users_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
