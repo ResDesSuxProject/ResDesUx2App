@@ -1,6 +1,5 @@
 package com.example.pettivitywatch;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -12,20 +11,26 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
+import com.example.pettivitywatch.communication.HeartRateQueue;
+import com.example.pettivitywatch.models.ChangeListener;
 
 public class Sensors {
     private static final String TAG = "Sensors";
     private final SensorManager sensorManager;
     private final Sensor sensor;
-    private TextView textView;
+    private HeartRateQueue heartRateQueue;
+    private ChangeListener<Float> changeListener;
 
+    /**
+     * Callback about changes in the sensors
+     */
     private final SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-//            Log.v(TAG, "onSensorChanged: " + sensorEvent.values[0]);
-            if (textView != null && sensorEvent.values[0] > 0) {
-                textView.setText(String.format("Heart rate: %.0f", sensorEvent.values[0]));
+            changeListener.onChange(sensorEvent.values[0]);
+            // If a heartRateQueue has been registered add it to it.
+            if (heartRateQueue != null && sensorEvent.values[0] > 0) {
+                heartRateQueue.addToQueue((int) sensorEvent.values[0]);
             }
         }
 
@@ -38,8 +43,9 @@ public class Sensors {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
     }
 
-    public void register(TextView textView) {
-        this.textView = textView;
+    public void register(HeartRateQueue heartRateQueue, ChangeListener<Float> changeListener) {
+        this.heartRateQueue = heartRateQueue;
+        this.changeListener = changeListener;
         sensorManager.registerListener(sensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI);
     }
 

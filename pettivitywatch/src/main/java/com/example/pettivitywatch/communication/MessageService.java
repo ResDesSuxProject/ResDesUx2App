@@ -11,7 +11,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 public class MessageService extends WearableListenerService {
-    private static final String LISTEN_PATH = "/my_path";
+    private static final String LISTEN_PATH = "/pettivity_userdata";
     private static final String TAG = "MessageService";
 
     @Override

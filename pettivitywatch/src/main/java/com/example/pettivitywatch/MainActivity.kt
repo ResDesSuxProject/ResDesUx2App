@@ -9,10 +9,10 @@ import androidx.wear.widget.BoxInsetLayout
 import com.example.pettivitywatch.communication.Communication
 import com.example.pettivitywatch.databinding.ActivityMainBinding
 import com.example.pettivitywatch.fragments.LoginFragment
-import com.example.pettivitywatch.server.ServerHandler
 
 
 class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProvider {
+    private val TAG = "MainActivity"
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var sensors: Sensors;
@@ -20,38 +20,33 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
     private lateinit var testTextView: TextView
     private lateinit var background: BoxInsetLayout
 
-    private lateinit var serverHandler: ServerHandler
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val comm = Communication(this)
-
-        // initialize server:
-//        serverHandler = ServerHandler(this)
-
-        // setup server connect fragment
-//        val connectServerFragment = ConnectServerFragment();
-//        connectServerFragment.setServerHandler(serverHandler);
+        // setup the communication
+        val communication = Communication(this)
 
         // setup login fragment
         val loginFragment = LoginFragment()
 //        loginFragment.setServerHandler(serverHandler)
 
-//        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, connectServerFragment).commit()
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loginFragment).commit()
 
         testTextView = findViewById(R.id.test)
         background = findViewById(R.id.background)
 
+        // Register the sensors and connect to the communication
         sensors = Sensors(this)
-        sensors.register(testTextView)
+        sensors.register(communication, this::sensorUpdate)
 
         ambientController = AmbientModeSupport.attach(this)
+    }
 
+    private fun sensorUpdate(BPM: Float) {
+        testTextView.text = "Heart rate: $BPM"
     }
 
     override fun onDestroy() {

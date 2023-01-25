@@ -37,7 +37,7 @@ public class MainActivity extends BoundActivity {
     protected Handler myHandler;
     int receivedMessageNumber = 1;
     int sentMessageNumber = 1;
-    public static final String PATH = "/my_path";
+    public static final String PATH = "/heartRates";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
