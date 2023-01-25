@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
 
         // setup login fragment
         val loginFragment = LoginFragment()
-//        loginFragment.setServerHandler(serverHandler)
 
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loginFragment).commit()
 
