@@ -83,6 +83,26 @@ public class ServerHandler implements ServerInteraction {
         connectTask.execute();
     }
 
+    private void connectWiFi(AppCompatActivity activity) {
+//        ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+//            public void onAvailable(Network network) {
+//                super.onAvailable(network);
+//                // The Wi-Fi network has been acquired, bind it to use this network by default
+//                connectivityManager.bindProcessToNetwork(network);
+//            }
+//
+//            public void onLost(Network network) {
+//                super.onLost(network);
+//                // The Wi-Fi network has been disconnected
+//            }
+//        };
+//        connectivityManager.requestNetwork(
+//                new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(),
+//                callback
+//        );
+
+    }
+
     /**
      * Connect to server is called form ConnectTask when the server is (re)connected
      * @param socket The socket that connects to the server
