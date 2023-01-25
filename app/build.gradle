@@ -46,11 +46,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
-
-    implementation 'com.google.android.gms:play-services-fitness:21.1.0'
-    implementation 'com.google.android.gms:play-services-auth:20.4.0'
-    implementation "androidx.health.connect:connect-client:1.0.0-alpha06"
-
 //    Communication with the app:
     implementation 'com.google.android.gms:play-services-wearable:18.0.0'
 }

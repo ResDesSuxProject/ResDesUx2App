@@ -28,21 +28,6 @@
         android:theme="@style/Theme.ResDesUx2"
         tools:targetApi="33">
 
-        <!-- Activity to show rationale of Health Connect permissions -->
-        <activity
-            android:name=".Activities.PermissionsRationaleActivity"
-            android:enabled="true"
-            android:exported="true">
-
-            <!-- (a) reference permissions resource -->
-            <meta-data
-                android:name="health_permissions"
-                android:resource="@array/health_permissions" />
-            <!-- (b) handle intent -->
-            <intent-filter>
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-            </intent-filter>
-        </activity> <!-- </activity> -->
         <receiver
             android:name=".Widgets.StatusWidget"
             android:exported="false">

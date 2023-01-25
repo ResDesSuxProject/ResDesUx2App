@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends BoundActivity {
-//https://developers.google.com/fit/android/get-started#groovy-dsl
-
     protected Handler myHandler;
     int receivedMessageNumber = 1;
     int sentMessageNumber = 1;
@@ -54,54 +52,12 @@ public class MainActivity extends BoundActivity {
             return true;
         });
 
-        //Register to receive local broadcasts, which we'll be creating in the next step//
+        // Register to receive local broadcasts, which we'll be creating in the next step//
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
         Receiver messageReceiver = new Receiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
 
         findViewById(R.id.my_image_view).setOnClickListener(this::talkClick);
-//        WatchSensor watchSensor = new WatchSensor(this);
-//        ActiveWatchSensor activeWatchSensor = new ActiveWatchSensor(this);
-//        GoogleSignInOptionsExtension fitnessOptions =
-//                FitnessOptions.builder()
-//                        .addDataType(DataType.TYPE_HEART_RATE_BPM, FitnessOptions.ACCESS_READ)
-//                        .build();
-//
-//        GoogleSignInAccount googleSignInAccount =
-//                GoogleSignIn.getAccountForExtension(this, fitnessOptions);
-////
-//        if (!GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions)) {
-//            GoogleSignIn.requestPermissions(
-//                    this, // your activity
-//                    1, // e.g. 1
-//                    googleSignInAccount,
-//                    fitnessOptions);
-//        } else {
-//            KotlinWatch kotlinWatch = new KotlinWatch(this, this);
-//            new Thread(kotlinWatch::run).start();
-//
-//
-//            Date currentTime = Calendar.getInstance().getTime();
-//            Task<DataReadResponse> response = Fitness.getHistoryClient(this, googleSignInAccount)
-//                    .readData(new DataReadRequest.Builder()
-//                            .read(DataType.TYPE_HEART_RATE_BPM)
-//                            .setTimeRange(currentTime.getTime() - 1000 * 3600 * 24, currentTime.getTime() + 1000 * 3600 * 24, TimeUnit.MILLISECONDS)
-//                            .build());
-//            new Thread(() -> {
-//                DataReadResponse readDataResponse = null;
-//                try {
-//                    readDataResponse = Tasks.await(response);
-//                    DataSet dataSet = readDataResponse.getDataSet(DataType.TYPE_HEART_RATE_BPM);
-//                    Log.e("Yess", "onCreate: " + dataSet.getDataPoints());
-//                } catch (ExecutionException | InterruptedException e) {
-//                    Log.e("Yess", "onCreate: " + e);
-//                }
-//            }).start();
-//        }
-
-        // Samples the user's activity once per minute.
-//        Task<Void> response = Fitness.getRecordingClient(this, googleSignInAccount)
-//                .subscribe(DataType.TYPE_HEART_RATE_BPM);
     }
 
     //Define a nested class that extends BroadcastReceiver//
