@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Check whether Health Connect is installed or not -->
     <uses-permission android:name="androidx.health.permission.HeartRate.READ" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
@@ -27,11 +27,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ResDesUx2"
         tools:targetApi="33">
+
         <!-- Activity to show rationale of Health Connect permissions -->
         <activity
             android:name=".Activities.PermissionsRationaleActivity"
-            android:exported="true"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
+
             <!-- (a) reference permissions resource -->
             <meta-data
                 android:name="health_permissions"
@@ -40,10 +42,7 @@
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
-        </activity>
-
-
-        <!-- </activity> -->
+        </activity> <!-- </activity> -->
         <receiver
             android:name=".Widgets.StatusWidget"
             android:exported="false">
@@ -101,6 +100,16 @@
         <service
             android:name=".Server.ServerService"
             android:singleUser="true" />
+
+        <service
+            android:name=".Communication.MessageService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/my_path" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

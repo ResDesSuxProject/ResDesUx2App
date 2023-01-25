@@ -19,7 +19,7 @@ public class Communication {
     private static final String TAG = "Communication";
     private String transcriptionNodeId = null;
     private final Context context;
-    public static final String HEART_RATE_MESSAGE_PATH = "/heartRates";
+    public static final String HEART_RATE_MESSAGE_PATH = "/my_path";//heartRates";
 
     public Communication(Context context) {
         this.context = context;
