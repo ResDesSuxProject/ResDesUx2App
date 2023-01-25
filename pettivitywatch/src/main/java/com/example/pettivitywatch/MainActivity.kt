@@ -6,8 +6,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.BoxInsetLayout
+import com.example.pettivitywatch.communication.Communication
 import com.example.pettivitywatch.databinding.ActivityMainBinding
-import com.example.pettivitywatch.fragments.ConnectServerFragment
 import com.example.pettivitywatch.fragments.LoginFragment
 import com.example.pettivitywatch.server.ServerHandler
 
@@ -28,18 +28,21 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val comm = Communication(this)
+
         // initialize server:
-        serverHandler = ServerHandler(this)
+//        serverHandler = ServerHandler(this)
 
         // setup server connect fragment
-        val connectServerFragment = ConnectServerFragment();
-        connectServerFragment.setServerHandler(serverHandler);
+//        val connectServerFragment = ConnectServerFragment();
+//        connectServerFragment.setServerHandler(serverHandler);
 
         // setup login fragment
         val loginFragment = LoginFragment()
-        loginFragment.setServerHandler(serverHandler)
+//        loginFragment.setServerHandler(serverHandler)
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, connectServerFragment).commit()
+//        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, connectServerFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loginFragment).commit()
 
         testTextView = findViewById(R.id.test)
         background = findViewById(R.id.background)

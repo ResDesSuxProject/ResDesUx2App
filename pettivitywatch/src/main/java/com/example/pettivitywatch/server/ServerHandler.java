@@ -17,8 +17,6 @@ import com.example.pettivitywatch.models.Change2Listener;
 import com.example.pettivitywatch.models.ChangeListener;
 import com.example.pettivitywatch.models.ServerInteraction;
 import com.example.pettivitywatch.models.User;
-import com.example.pettivitywatch.server.ConnectTask;
-import com.example.pettivitywatch.server.ServerListenerThread;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -78,9 +76,9 @@ public class ServerHandler implements ServerInteraction {
         // Create a new Handler on the UI thread so we can communicate with the other thread
         mainThreadHandler = new Handler(Looper.getMainLooper(), this::handleMessage);
 
-        // Run a task in the background to connect to the server
-        connectTask = new ConnectTask(serverIp, serverPort, this::connectToServer, mainThreadHandler);
-        connectTask.execute();
+        connectWiFi(activity);
+
+
     }
 
     private void connectWiFi(AppCompatActivity activity) {
@@ -100,6 +98,31 @@ public class ServerHandler implements ServerInteraction {
 //                new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(),
 //                callback
 //        );
+
+        ConnectivityManager connectivityManager = activity.getSystemService(ConnectivityManager.class);
+//        NetworkRequest request = new NetworkRequest.Builder()
+//                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+//                .build();
+//        ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback();
+//        connectivityManager.requestNetwork(request, networkCallback);
+
+        ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+            public void onAvailable(Network network) {
+                super.onAvailable(network);
+                // The Wi-Fi network has been acquired, bind it to use this network by default
+                connectivityManager.bindProcessToNetwork(network);
+                System.out.println("WIFI!! " + network.toString());
+            }
+
+            public void onLost(Network network) {
+                super.onLost(network);
+                // The Wi-Fi network has been disconnected
+            }
+        };
+        connectivityManager.requestNetwork(
+                new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(),
+                callback
+        );
 
     }
 
