@@ -1,4 +1,4 @@
-package com.example.pettivitywatch.communication;
+package com.example.pettivitywatch.models;
 
 public interface HeartRateQueue {
     void addToQueue(int heardRate);

@@ -3,6 +3,7 @@ package com.example.pettivitywatch.communication;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.pettivitywatch.models.HeartRateQueue;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.gms.wearable.Node;
@@ -15,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Communication implements HeartRateQueue{
+public class Communication implements HeartRateQueue {
     private static final String TAG = "Communication";
     private String transcriptionNodeId = null;
     private final Context context;

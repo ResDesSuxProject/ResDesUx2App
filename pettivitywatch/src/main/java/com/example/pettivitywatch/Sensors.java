@@ -6,12 +6,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.pettivitywatch.communication.HeartRateQueue;
+import com.example.pettivitywatch.models.HeartRateQueue;
 import com.example.pettivitywatch.models.ChangeListener;
 
 public class Sensors {
