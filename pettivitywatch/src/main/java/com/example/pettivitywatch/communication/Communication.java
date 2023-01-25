@@ -59,7 +59,7 @@ public class Communication implements HeartRateQueue {
          transcriptionNodeId = pickBestNodeId(nodes);
         lock.unlock();
 
-        // Constantly print the queue in steps of 10 seconds if it is not empty
+        // Constantly print the queue in steps of 15 seconds if it is not empty
         while (true) {
             synchronized (heartRateQueue) {
                 if (heartRateQueue.size() > 0) {
@@ -67,7 +67,7 @@ public class Communication implements HeartRateQueue {
                     heartRateQueue.clear();
                 }
             }
-            delay(1000);
+            delay(15000);
         }
     }
 
