@@ -11,4 +11,6 @@
     <string name="your_heart_rate">Your heart rate is %1$.0f BPM</string>
     <string name="heart_rate_init">calculating heart rate…</string>
     <string name="visualization_content_desc">Visualization of your current activity score</string>
+    <string name="debug_title">Debug settings</string>
+    <string name="debug_fake_bpm">Fake BPM: %1$d</string>
 </resources>

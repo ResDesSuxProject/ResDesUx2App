@@ -3,6 +3,7 @@ package com.example.pettivitywatch.communication;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.pettivitywatch.models.DebugBPMHandler;
 import com.example.pettivitywatch.models.HeartRateQueue;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -20,12 +21,14 @@ public class Communication implements HeartRateQueue {
     private static final String TAG = "Communication";
     private String transcriptionNodeId = null;
     private final Context context;
+    private final DebugBPMHandler debugBPMHandler;
     public static final String HEART_RATE_MESSAGE_PATH = "/heartRates";//heartRates";
     private final ReentrantLock lock;
     private final List<Integer> heartRateQueue;
 
-    public Communication(Context context) {
+    public Communication(Context context, DebugBPMHandler debugBPMHandler) {
         this.context = context;
+        this.debugBPMHandler = debugBPMHandler;
 
         lock = new ReentrantLock();
         heartRateQueue = new ArrayList<>();
@@ -62,7 +65,10 @@ public class Communication implements HeartRateQueue {
         // Constantly print the queue in steps of 15 seconds if it is not empty
         while (true) {
             synchronized (heartRateQueue) {
-                if (heartRateQueue.size() > 0) {
+                if (debugBPMHandler.isEnabled()){
+                    sendData("" + debugBPMHandler.getBPM());
+                }
+                else if (heartRateQueue.size() > 0) {
                     sendData("" + average(heartRateQueue));
                     heartRateQueue.clear();
                 }
@@ -84,7 +90,7 @@ public class Communication implements HeartRateQueue {
                     .sendMessage(transcriptionNodeId, HEART_RATE_MESSAGE_PATH, data.getBytes());
 
             // Add callbacks when it succeeded or failed
-//            sendTask.addOnSuccessListener(integer -> Log.d(TAG, "added data to sending queue: " + data));
+//            sendTask.addOnSuccessListener(integer -> Log.v(TAG, "added data to sending queue: " + data));
             sendTask.addOnFailureListener(error -> {
                 Log.e(TAG, "requestTranscription: Couldn't send message: " + error.getMessage() + "\n");
                 error.printStackTrace();

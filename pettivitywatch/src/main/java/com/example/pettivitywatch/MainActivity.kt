@@ -44,10 +44,9 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // setup the communication
-        val communication = Communication(this)
+        background = findViewById(R.id.background)
 
-        // setup the fragments
+        // Setup the fragments
         dashboardFragment = DashboardFragment()
         debugScreenFragment = DebugScreenFragment()
         ambientListeners.add(dashboardFragment)
@@ -55,12 +54,13 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         fragments.add(dashboardFragment)
         fragments.add(debugScreenFragment)
 
-
+        // Setup Fragment swiper
         val fragmentSwipeAdaptor = FragmentSwipeAdaptor(this, fragments)
         viewPager = findViewById(R.id.pager)
         viewPager.adapter = fragmentSwipeAdaptor
 
-        background = findViewById(R.id.background)
+        // Setup the communication
+        val communication = Communication(this, debugScreenFragment)
 
         // Register the sensors and connect to the communication
         sensors = Sensors(this)
