@@ -18,6 +18,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.example.resdesux2.Communication.MessageSender;
 import com.example.resdesux2.HelperClasses.VisualizationManager;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.NavigationFragment;
@@ -34,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends BoundActivity {
     protected Handler myHandler;
     int sentMessageNumber = 1;
-    public static final String PATH = "/heartRates";
+    public static final String PATH = "/pettivity_userdata";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,8 @@ public class MainActivity extends BoundActivity {
             return true;
         });
 
-        findViewById(R.id.my_image_view).setOnClickListener(this::talkClick);
+        MessageSender messageSender = new MessageSender();
+        findViewById(R.id.my_image_view).setOnClickListener(view -> messageSender.sendMessage("Test", this));
     }
 
 
