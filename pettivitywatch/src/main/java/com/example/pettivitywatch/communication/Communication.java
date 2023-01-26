@@ -84,7 +84,7 @@ public class Communication implements HeartRateQueue {
                     .sendMessage(transcriptionNodeId, HEART_RATE_MESSAGE_PATH, data.getBytes());
 
             // Add callbacks when it succeeded or failed
-            sendTask.addOnSuccessListener(integer -> Log.d(TAG, "added data to sending queue: " + data));
+//            sendTask.addOnSuccessListener(integer -> Log.d(TAG, "added data to sending queue: " + data));
             sendTask.addOnFailureListener(error -> {
                 Log.e(TAG, "requestTranscription: Couldn't send message: " + error.getMessage() + "\n");
                 error.printStackTrace();

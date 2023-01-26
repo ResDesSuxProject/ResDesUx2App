@@ -78,7 +78,6 @@
         android:paddingHorizontal="20dp"
 
         android:visibility="invisible"
-        android:src="@drawable/dagoestaand4"
         android:tintMode="multiply"
         app:tint="@color/ambient_tint" />
 
