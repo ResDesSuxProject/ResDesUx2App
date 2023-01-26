@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends BoundActivity {
     protected Handler myHandler;
-    int receivedMessageNumber = 1;
     int sentMessageNumber = 1;
     public static final String PATH = "/heartRates";
 
@@ -52,22 +51,7 @@ public class MainActivity extends BoundActivity {
             return true;
         });
 
-        // Register to receive local broadcasts, which we'll be creating in the next step//
-        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-        Receiver messageReceiver = new Receiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
-
         findViewById(R.id.my_image_view).setOnClickListener(this::talkClick);
-    }
-
-    //Define a nested class that extends BroadcastReceiver//
-    public class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Upon receiving each message from the wearable, display the following text//
-            String message = "I just received a message from the wearable " + receivedMessageNumber++;
-            Log.i("Test", "onReceive: " + message);
-        }
     }
 
 

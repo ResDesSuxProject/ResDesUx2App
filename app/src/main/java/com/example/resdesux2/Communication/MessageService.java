@@ -19,10 +19,9 @@ public class MessageService extends WearableListenerService {
             Intent messageIntent = new Intent();
             messageIntent.setAction(Intent.ACTION_SEND);
             messageIntent.putExtra("message", message);
-            Log.e(TAG, "onMessageReceived: " + message);
 
             // Broadcast the received Data Layer messages locally
-            LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).sendBroadcast(messageIntent);
         }
         else {
             super.onMessageReceived(messageEvent);

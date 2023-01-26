@@ -1,7 +1,9 @@
 package com.example.resdesux2.Server;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
@@ -11,6 +13,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.resdesux2.Communication.MessageReceiver;
 import com.example.resdesux2.Models.Change2Listener;
 import com.example.resdesux2.Models.ChangeListener;
 import com.example.resdesux2.Models.User;
@@ -29,7 +34,6 @@ public class ServerService extends ForegroundService {
     public static final int MESSAGE_FROM_SERVER = 100;
     public static final int MESSAGE_DISCONNECTED = 99;
     public static final int MESSAGE_FAILED_CONNECTION = 98;
-    public static final int MESSAGE_SENSOR_CONNECTED = 101;
 
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
@@ -45,10 +49,6 @@ public class ServerService extends ForegroundService {
     private ConnectTask connectTask;
     ServerListenerThread listenerThread;
     SharedPreferences sharedPreferencesServer;
-
-    /* ---- Sensor ---- */
-    private boolean sensorConnecting = false;
-    private boolean sensorConnected = false;
 
     private int currentUserID = -1;
     private User currentUser = null;
@@ -86,20 +86,14 @@ public class ServerService extends ForegroundService {
             connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
             connectTask.execute();
 
-            isRunning = true;
+            // Register to receive local broadcasts from the MessageService
+            IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+            MessageReceiver messageReceiver = new MessageReceiver(this::addBPM);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).registerReceiver(messageReceiver, messageFilter);
 
+            isRunning = true;
         }
         return START_STICKY;
-    }
-
-    public void connectSensor(Context context) {
-        if (!sensorConnecting && !sensorConnected){
-            // Run the connection with the E4 sensor in the background
-//            new Thread(() ->
-//
-//            ).start();
-            sensorConnecting = true;
-        }
     }
 
     /**
@@ -173,10 +167,6 @@ public class ServerService extends ForegroundService {
                     connectionFailedListener.onChange(false);
                 }
                 break;
-
-            case MESSAGE_SENSOR_CONNECTED:
-                sensorConnected = true;
-                sensorConnecting = false;
         }
         return true;
     }
@@ -257,6 +247,22 @@ public class ServerService extends ForegroundService {
                     loginListener.onChange(loginId);
                 break;
         }
+    }
+
+    /* Wear os */
+    private void addBPM(String BPM) {
+        Log.v(TAG, "addBPM: " + BPM);
+        if (currentUserID == -1) return;
+
+        int bpm;
+        try {
+            bpm = Integer.parseInt(BPM);
+        } catch (NumberFormatException ignored) {
+            return;
+        }
+
+        String payload = String.format(Locale.US,"measure: %d %d", currentUserID, bpm);
+        new WriteToServer(payload, writer, mainThreadHandler).start();
     }
 
     /* ------------------------------ Listeners ------------------------------ */
