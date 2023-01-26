@@ -2,7 +2,6 @@ package com.example.resdesux2.Communication;
 
 import android.content.Context;
 
-import com.example.resdesux2.Activities.MainActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.gms.wearable.Node;
@@ -14,10 +13,10 @@ import java.util.concurrent.ExecutionException;
 public class MessageSenderThread implements Runnable {
     private final String path;
     private final Context context;
-    private final MessageSender messageSender;
+    private final MessageSenderWatch messageSender;
     private final String message;
 
-    public MessageSenderThread(String message, String path, Context context, MessageSender messageSender) {
+    public MessageSenderThread(String message, String path, Context context, MessageSenderWatch messageSender) {
         this.message = message;
         this.path = path;
         this.context = context;

@@ -2,10 +2,6 @@ package com.example.resdesux2.Activities;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,11 +10,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
-import com.example.resdesux2.Communication.MessageSender;
+import com.example.resdesux2.Communication.MessageSenderWatch;
 import com.example.resdesux2.HelperClasses.VisualizationManager;
 import com.example.resdesux2.Models.User;
 import com.example.resdesux2.NavigationFragment;
@@ -52,7 +46,7 @@ public class MainActivity extends BoundActivity {
             return true;
         });
 
-        MessageSender messageSender = new MessageSender();
+        MessageSenderWatch messageSender = new MessageSenderWatch();
         findViewById(R.id.my_image_view).setOnClickListener(view -> messageSender.sendMessage("Test", this));
     }
 

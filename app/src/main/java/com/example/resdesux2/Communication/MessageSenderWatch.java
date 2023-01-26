@@ -6,10 +6,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-public class MessageSender {
+import com.example.resdesux2.Models.MessageSender;
+
+public class MessageSenderWatch implements MessageSender {
     private static final String PATH = "/pettivity_userdata";
     private final Handler messageHandler;
-    public MessageSender() {
+    public MessageSenderWatch() {
         messageHandler = new Handler(this::handleMessage);
     }
 

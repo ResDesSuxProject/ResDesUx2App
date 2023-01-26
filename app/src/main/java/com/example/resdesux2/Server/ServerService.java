@@ -1,7 +1,5 @@
 package com.example.resdesux2.Server;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -16,9 +14,10 @@ import android.widget.Toast;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.resdesux2.Communication.MessageReceiver;
-import com.example.resdesux2.Communication.MessageSender;
+import com.example.resdesux2.Communication.MessageSenderWatch;
 import com.example.resdesux2.Models.Change2Listener;
 import com.example.resdesux2.Models.ChangeListener;
+import com.example.resdesux2.Models.MessageSender;
 import com.example.resdesux2.Models.User;
 
 import java.io.BufferedReader;
@@ -108,7 +107,7 @@ public class ServerService extends ForegroundService {
             MessageReceiver messageReceiver = new MessageReceiver(this::addBPM);
             LocalBroadcastManager.getInstance(this.getApplicationContext()).registerReceiver(messageReceiver, messageFilter);
 
-            messageSender = new MessageSender();
+            messageSender = new MessageSenderWatch();
 
             isRunning = true;
         }
