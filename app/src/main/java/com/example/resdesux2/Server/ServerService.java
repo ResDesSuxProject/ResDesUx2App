@@ -250,10 +250,15 @@ public class ServerService extends ForegroundService {
     }
 
     /* Wear os */
+    /**
+     * Verifies the validity of the BPM and sends it to the server
+     * @param BPM the string that should represent the BPM
+     */
     private void addBPM(String BPM) {
         Log.v(TAG, "addBPM: " + BPM);
         if (currentUserID == -1) return;
 
+        // Verify BMP
         int bpm;
         try {
             bpm = Integer.parseInt(BPM);
@@ -261,6 +266,7 @@ public class ServerService extends ForegroundService {
             return;
         }
 
+        // Send it to the server
         String payload = String.format(Locale.US,"measure: %d %d", currentUserID, bpm);
         new WriteToServer(payload, writer, mainThreadHandler).start();
     }
