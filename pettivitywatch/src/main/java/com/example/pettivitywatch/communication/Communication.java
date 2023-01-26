@@ -58,7 +58,7 @@ public class Communication implements HeartRateQueue {
         lock.lock();
          transcriptionNodeId = pickBestNodeId(nodes);
         lock.unlock();
-
+        sendData("RequestScore");
         // Constantly print the queue in steps of 15 seconds if it is not empty
         while (true) {
             synchronized (heartRateQueue) {

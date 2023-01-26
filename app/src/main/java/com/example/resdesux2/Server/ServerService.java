@@ -104,7 +104,7 @@ public class ServerService extends ForegroundService {
             /* ----- Watch ----- */
             // Register to receive local broadcasts from the MessageService
             IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-            MessageReceiver messageReceiver = new MessageReceiver(this::addBPM);
+            MessageReceiver messageReceiver = new MessageReceiver(this::processWatchData);
             LocalBroadcastManager.getInstance(this.getApplicationContext()).registerReceiver(messageReceiver, messageFilter);
 
             messageSender = new MessageSenderWatch();
@@ -269,6 +269,15 @@ public class ServerService extends ForegroundService {
     }
 
     /* Wear os */
+    private void processWatchData(String message) {
+        if (message.contains("RequestScore")) {
+            if (score != null)
+                messageSender.sendMessage("score: " + score.getIntensityScore() +"," + score.getFrequencyScore(), this);
+        } else {
+            addBPM(message);
+        }
+    }
+
     /**
      * Verifies the validity of the BPM and sends it to the server
      * @param BPM the string that should represent the BPM
