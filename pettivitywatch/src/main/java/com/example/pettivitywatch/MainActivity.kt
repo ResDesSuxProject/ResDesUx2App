@@ -4,7 +4,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.viewpager2.widget.ViewPager2
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.BoxInsetLayout
 import com.example.pettivitywatch.communication.Communication
@@ -12,6 +14,7 @@ import com.example.pettivitywatch.communication.MessageReceiver
 import com.example.pettivitywatch.databinding.ActivityMainBinding
 import com.example.pettivitywatch.fragments.DashboardFragment
 import com.example.pettivitywatch.fragments.DebugScreenFragment
+import com.example.pettivitywatch.fragments.FragmentSwipeAdaptor
 import com.example.pettivitywatch.models.AmbientListener
 import com.example.pettivitywatch.models.User
 import com.example.pettivitywatch.models.User.Score
@@ -27,8 +30,10 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
 
     // Fragments
     private val ambientListeners: ArrayList<AmbientListener> = ArrayList()
+    private val fragments: ArrayList<Fragment> = ArrayList()
     private lateinit var dashboardFragment: DashboardFragment
     private lateinit var debugScreenFragment: DebugScreenFragment
+    private lateinit var viewPager: ViewPager2
 
     // User data
     private lateinit var lastScore: User.Score
@@ -47,8 +52,13 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         debugScreenFragment = DebugScreenFragment()
         ambientListeners.add(dashboardFragment)
         ambientListeners.add(debugScreenFragment)
+        fragments.add(dashboardFragment)
+        fragments.add(debugScreenFragment)
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, dashboardFragment).commit()
+
+        val fragmentSwipeAdaptor = FragmentSwipeAdaptor(this, fragments)
+        viewPager = findViewById(R.id.pager)
+        viewPager.adapter = fragmentSwipeAdaptor
 
         background = findViewById(R.id.background)
 
@@ -57,8 +67,6 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         sensors.register(communication, this::sensorUpdate)
 
         ambientController = AmbientModeSupport.attach(this)
-
-        // Register to receive local broadcasts from the MessageService
 
         /* ----- Watch ----- */
         // Register to receive local broadcasts from the MessageService
@@ -72,6 +80,7 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
 
     }
     private fun receiveScore(score: Score) {
+        lastScore = score
         dashboardFragment.updateScore(score)
     }
 
