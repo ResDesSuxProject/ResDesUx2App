@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.DashboardFragment">
+
+    <LinearLayout
+        android:id="@+id/dashboard_title_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/txt_background"
+        android:elevation="10dp"
+        android:paddingVertical="5dp">
+
+    <TextView
+        android:id="@+id/dashboard_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:textAlignment="center"
+        android:textSize="@dimen/titleSize"
+        android:textColor="@color/primary"
+        android:text="@string/dashboard_title"/>
+    <TextView
+        android:id="@+id/dashboard_subTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:textAlignment="center"
+        android:textSize="@dimen/subTitleSize"
+        android:textColor="@color/primary"
+        android:text="@string/heart_rate_init"/>
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/dashboard_animated_dog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/dashboard_background_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/visualization_content_desc"
+            android:scaleType="centerCrop"
+
+            android:src="@drawable/background"
+            />
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/dashboard_static_dog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="5dp"
+
+        android:contentDescription="@string/visualization_content_desc"
+        android:scaleType="centerInside"
+        android:paddingTop="30dp"
+        android:paddingHorizontal="20dp"
+
+        android:visibility="invisible"
+        android:src="@drawable/dagoestaand4"
+        android:tintMode="multiply"
+        app:tint="@color/ambient_tint" />
+<!--        android:paddingTop="90dp"-->
+<!--        android:paddingBottom="20dp"-->
+<!--        android:paddingStart="60dp"-->
+<!--        android:paddingEnd="30dp"-->
+
+
+</RelativeLayout>

@@ -1,24 +1,26 @@
 package com.example.pettivitywatch
 
-import android.graphics.Color
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.BoxInsetLayout
 import com.example.pettivitywatch.communication.Communication
 import com.example.pettivitywatch.databinding.ActivityMainBinding
-import com.example.pettivitywatch.fragments.LoginFragment
+import com.example.pettivitywatch.fragments.DashboardFragment
+import com.example.pettivitywatch.models.AmbientListener
 
 
 class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProvider {
     private val TAG = "MainActivity"
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var sensors: Sensors;
+    private lateinit var sensors: Sensors
     private lateinit var ambientController: AmbientModeSupport.AmbientController
-    private lateinit var testTextView: TextView
     private lateinit var background: BoxInsetLayout
+
+    // Fragments
+    private val ambientListeners: ArrayList<AmbientListener> = ArrayList()
+    private lateinit var dashboardFragment: DashboardFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +31,12 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         // setup the communication
         val communication = Communication(this)
 
-        // setup login fragment
-        val loginFragment = LoginFragment()
+        // setup the fragments
+        dashboardFragment = DashboardFragment()
+        ambientListeners.add(dashboardFragment)
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, loginFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, dashboardFragment).commit()
 
-        testTextView = findViewById(R.id.test)
         background = findViewById(R.id.background)
 
         // Register the sensors and connect to the communication
@@ -44,8 +46,10 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         ambientController = AmbientModeSupport.attach(this)
     }
 
-    private fun sensorUpdate(BPM: Float) {
-        testTextView.text = "Heart rate: $BPM"
+    private fun sensorUpdate(bpm: Float) {
+        if (bpm > 0) {
+            dashboardFragment.updateHeartRate(bpm)
+        }
     }
 
     override fun onDestroy() {
@@ -53,20 +57,20 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         sensors.unregister()
     }
 
-    override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback = MyAmbientCallback();
+    override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback = MyAmbientCallback()
 
     private inner class MyAmbientCallback : AmbientModeSupport.AmbientCallback() {
 
         override fun onEnterAmbient(ambientDetails: Bundle?) {
             // Handle entering ambient mode
-            testTextView.setTextColor(Color.GREEN)
             background.setBackgroundColor(resources.getColor(R.color.ambient_background))
+            ambientListeners.forEach{it.onEnterAmbient()}
         }
 
         override fun onExitAmbient() {
             // Handle exiting ambient mode
-            testTextView.setTextColor(Color.WHITE)
             background.setBackgroundColor(resources.getColor(R.color.background))
+            ambientListeners.forEach{it.onExitAmbient()}
         }
 
         override fun onUpdateAmbient() {

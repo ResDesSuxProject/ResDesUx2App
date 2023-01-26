@@ -2,5 +2,7 @@
 <resources>
     <color name="ambient_background">#252525</color>
     <color name="background">#2E2E2E</color>
+    <color name="txt_background">#BE2E2E2E</color>
     <color name="primary">#2196F3</color>
+    <color name="ambient_tint">#888888</color>
 </resources>
