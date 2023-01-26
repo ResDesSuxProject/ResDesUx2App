@@ -19,6 +19,9 @@ public class VisualizationManager {
         frequency = clamp(frequency/2, VIDEOS[intensity].length - 1);
         return VIDEOS[intensity][frequency];
     }
+    public static int getVideo(User.Score score) {
+        return getVideo(score.getIntensityScore(), score.getFrequencyScore());
+    }
 
     public static int getImage(User.Score score) {
         return getImage(score.getIntensityScore(), score.getFrequencyScore());

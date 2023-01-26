@@ -1,13 +1,19 @@
 package com.example.pettivitywatch
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.wear.ambient.AmbientModeSupport
 import androidx.wear.widget.BoxInsetLayout
 import com.example.pettivitywatch.communication.Communication
+import com.example.pettivitywatch.communication.MessageReceiver
 import com.example.pettivitywatch.databinding.ActivityMainBinding
 import com.example.pettivitywatch.fragments.DashboardFragment
 import com.example.pettivitywatch.models.AmbientListener
+import com.example.pettivitywatch.models.User
+import com.example.pettivitywatch.models.User.Score
 
 
 class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProvider {
@@ -21,6 +27,9 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
     // Fragments
     private val ambientListeners: ArrayList<AmbientListener> = ArrayList()
     private lateinit var dashboardFragment: DashboardFragment
+
+    // User data
+    private lateinit var lastScore: User.Score
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +53,22 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
         sensors.register(communication, this::sensorUpdate)
 
         ambientController = AmbientModeSupport.attach(this)
+
+        // Register to receive local broadcasts from the MessageService
+
+        /* ----- Watch ----- */
+        // Register to receive local broadcasts from the MessageService
+        val messageFilter = IntentFilter(Intent.ACTION_SEND)
+        val messageReceiver = MessageReceiver(this::receiveMessage, this::receiveScore)
+        LocalBroadcastManager.getInstance(this.applicationContext)
+                                .registerReceiver(messageReceiver, messageFilter)
+    }
+
+    private fun receiveMessage(message: String) {
+
+    }
+    private fun receiveScore(score: Score) {
+        dashboardFragment.updateScore(score)
     }
 
     private fun sensorUpdate(bpm: Float) {
