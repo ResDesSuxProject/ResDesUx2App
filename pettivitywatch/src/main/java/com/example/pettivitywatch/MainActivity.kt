@@ -11,6 +11,7 @@ import com.example.pettivitywatch.communication.Communication
 import com.example.pettivitywatch.communication.MessageReceiver
 import com.example.pettivitywatch.databinding.ActivityMainBinding
 import com.example.pettivitywatch.fragments.DashboardFragment
+import com.example.pettivitywatch.fragments.DebugScreenFragment
 import com.example.pettivitywatch.models.AmbientListener
 import com.example.pettivitywatch.models.User
 import com.example.pettivitywatch.models.User.Score
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
     // Fragments
     private val ambientListeners: ArrayList<AmbientListener> = ArrayList()
     private lateinit var dashboardFragment: DashboardFragment
+    private lateinit var debugScreenFragment: DebugScreenFragment
 
     // User data
     private lateinit var lastScore: User.Score
@@ -42,7 +44,9 @@ class MainActivity : AppCompatActivity(), AmbientModeSupport.AmbientCallbackProv
 
         // setup the fragments
         dashboardFragment = DashboardFragment()
+        debugScreenFragment = DebugScreenFragment()
         ambientListeners.add(dashboardFragment)
+        ambientListeners.add(debugScreenFragment)
 
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, dashboardFragment).commit()
 
