@@ -3,7 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Check whether Health Connect is installed or not -->
+    <uses-permission android:name="androidx.health.permission.HeartRate.READ" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -16,7 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ResDesUx2"
-        tools:targetApi="31">
+        tools:targetApi="33">
 
         <receiver
             android:name=".Widgets.StatusWidget"
@@ -71,9 +81,20 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <service
             android:name=".Server.ServerService"
             android:singleUser="true" />
+
+        <service
+            android:name=".Communication.MessageService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/heartRates" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

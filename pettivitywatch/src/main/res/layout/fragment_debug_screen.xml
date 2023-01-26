@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.DebugScreenFragment" android:paddingVertical="12dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/titleSize"
+        android:textColor="@color/primary"
+        android:textAlignment="center"
+        android:text="@string/debug_title" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/debug_switch_fake_BPM"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enable Fake BPM"
+        android:textSize="@dimen/subTitleSize"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/debug_Fake_BPM_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/subTitleSize"
+        android:text="@string/debug_fake_bpm"
+        android:textColor="@color/text_color"
+        android:textAlignment="center"/>
+    <SeekBar
+        android:id="@+id/debug_fake_bpm_seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:min="0"
+        android:max="200"
+        android:progress="80" />
+
+
+
+</LinearLayout>

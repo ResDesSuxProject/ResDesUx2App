@@ -1,6 +1,7 @@
 package com.example.resdesux2.Server;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
@@ -10,8 +11,13 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.resdesux2.Communication.MessageReceiver;
+import com.example.resdesux2.Communication.MessageSenderWatch;
 import com.example.resdesux2.Models.Change2Listener;
 import com.example.resdesux2.Models.ChangeListener;
+import com.example.resdesux2.Models.MessageSender;
 import com.example.resdesux2.Models.User;
 
 import java.io.BufferedReader;
@@ -29,9 +35,15 @@ public class ServerService extends ForegroundService {
     public static final int MESSAGE_DISCONNECTED = 99;
     public static final int MESSAGE_FAILED_CONNECTION = 98;
 
+    /**
+     * <hr>
+     */
     private final IBinder binder = new ServiceBinder();
     private boolean isRunning = false;
 
+    /**
+     * <hr>
+     */
     /* ----- Server ----- */
     static final int SERVER_PORT = 9999;
     private String server_IP = "";
@@ -44,9 +56,15 @@ public class ServerService extends ForegroundService {
     ServerListenerThread listenerThread;
     SharedPreferences sharedPreferencesServer;
 
+    // User
     private int currentUserID = -1;
     private User currentUser = null;
+    private User.Score score = null;
+    private ArrayList<User> users = new ArrayList<>();
 
+    /**
+     * <hr>
+     */
     /* ----- listeners ----- */
     // change listeners
     private ChangeListener<Boolean> connectedListener;
@@ -58,8 +76,11 @@ public class ServerService extends ForegroundService {
     private ArrayList<ChangeListener<ArrayList<User>>> userListeners = new ArrayList<>();
     private ArrayList<ChangeListener<User>> currentUserListener = new ArrayList<>();
 
-    private User.Score score = null;
-    private ArrayList<User> users = new ArrayList<>();
+    /**
+     * <hr>
+     */
+    // Watch communication
+    private MessageSender messageSender;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -80,8 +101,15 @@ public class ServerService extends ForegroundService {
             connectTask = new ConnectTask(server_IP, SERVER_PORT, this::connectToServer, mainThreadHandler);
             connectTask.execute();
 
-            isRunning = true;
+            /* ----- Watch ----- */
+            // Register to receive local broadcasts from the MessageService
+            IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+            MessageReceiver messageReceiver = new MessageReceiver(this::processWatchData);
+            LocalBroadcastManager.getInstance(this.getApplicationContext()).registerReceiver(messageReceiver, messageFilter);
 
+            messageSender = new MessageSenderWatch();
+
+            isRunning = true;
         }
         return START_STICKY;
     }
@@ -181,10 +209,8 @@ public class ServerService extends ForegroundService {
         if (arguments.length >= 2)
             arguments[1] = arguments[1].trim();
 
-        Log.i(TAG, "hoi");
         switch (command) {
             case "score":
-                Log.i(TAG, "hoi2");
                 String[] scores = arguments[1].split(",");
 
                 int _score = scores.length >= 2 ? Integer.parseInt(scores[0]) : (int) Double.parseDouble(scores[0]);
@@ -199,6 +225,7 @@ public class ServerService extends ForegroundService {
 
                 currentUser.setScore(score);
                 updateWidget(currentUser);
+                messageSender.sendMessage(line, this);
                 break;
             case "user":
                 String[] currentUserData = arguments[1].split(",");
@@ -239,6 +266,37 @@ public class ServerService extends ForegroundService {
                     loginListener.onChange(loginId);
                 break;
         }
+    }
+
+    /* Wear os */
+    private void processWatchData(String message) {
+        if (message.contains("RequestScore")) {
+            if (score != null)
+                messageSender.sendMessage("score: " + score.getIntensityScore() +"," + score.getFrequencyScore(), this);
+        } else {
+            addBPM(message);
+        }
+    }
+
+    /**
+     * Verifies the validity of the BPM and sends it to the server
+     * @param BPM the string that should represent the BPM
+     */
+    private void addBPM(String BPM) {
+        Log.v(TAG, "addBPM: " + BPM);
+        if (currentUserID == -1) return;
+
+        // Verify BMP
+        int bpm;
+        try {
+            bpm = Integer.parseInt(BPM);
+        } catch (NumberFormatException ignored) {
+            return;
+        }
+
+        // Send it to the server
+        String payload = String.format(Locale.US,"measure: %d %d", currentUserID, bpm);
+        new WriteToServer(payload, writer, mainThreadHandler).start();
     }
 
     /* ------------------------------ Listeners ------------------------------ */

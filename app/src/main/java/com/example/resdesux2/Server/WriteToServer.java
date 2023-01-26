@@ -22,6 +22,7 @@ public class WriteToServer extends Thread {
     @Override
     public void run() {
         super.run();
+        if (writer == null) return;
 
         try {
             writer.write(String.format("%s\n", message));

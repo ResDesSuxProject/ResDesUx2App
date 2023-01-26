@@ -23,6 +23,7 @@ import com.example.resdesux2.Widgets.StatusWidget;
 
 public class BoundActivity extends AppCompatActivity implements ConnectionDialog.ConnectionDialogListener {
     private static final String TAG = "BoundActivity";
+    protected boolean isDestroyed;
     protected ServerService serverService;
     protected boolean isBound;
     protected boolean isConnected;
@@ -57,6 +58,7 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
         super.onStart();
         isConnected = false;
         connectionDialog = new ConnectionDialog();
+        isDestroyed = false;
 
         Intent startServerServiceIntent = new Intent(this, ServerService.class);
 
@@ -83,6 +85,7 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
      * This method will be called once the activity has been bound to the server service.
      */
     private void onBound() {
+//        serverService.connectSensor(this);
         serverService.setConnectionListener(this::onConnected);
         serverService.setConnectionFailedListener(this::onFailedConnection);
     }
@@ -120,6 +123,12 @@ public class BoundActivity extends AppCompatActivity implements ConnectionDialog
             unbindService(connection);
             isBound = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isDestroyed = true;
     }
 
     /**

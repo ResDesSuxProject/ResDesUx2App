@@ -10,7 +10,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+//        flatDir {
+//            dirs 'libs'
+//        }
     }
 }
 rootProject.name = "ResDesUx2"
 include ':app'
+include ':pettivitywatch'

@@ -54,12 +54,6 @@ public class StatusWidget extends AppWidgetProvider {
         views = Collections.unmodifiableMap(_views);
     }
 
-    // load the images
-    private static final int[] dogImages = {
-            R.drawable.dagoestaand1, R.drawable.dagoestaand2, R.drawable.dagoestaand3,
-            R.drawable.dagoestaand4, R.drawable.dagoestaand5, R.drawable.dagoestaand6
-    };
-
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         // Construct the RemoteViews object
         currentView = getRemoteViews(context, appWidgetManager, appWidgetId);
@@ -77,13 +71,7 @@ public class StatusWidget extends AppWidgetProvider {
         if (currentUser != null && currentUser.getID() != -1) {
             currentView.setTextViewText(R.id.appwidget_welcome, widgetText + " " + currentUser.getUserName());
 
-            User.Score score = currentUser.getScore();
-
-            int index = score.getIntensityScore()/3 + score.getFrequencyScore()/3;
-            if (index >= dogImages.length) index = dogImages.length - 1;
-            else if (index < 0) index = 0;
-
-            currentView.setImageViewResource(R.id.appwidget_image, VisualizationManager.getImage(currentUser.getScore())); // R.drawable.dagoesleep1);//
+            currentView.setImageViewResource(R.id.appwidget_image, VisualizationManager.getImage(currentUser.getScore()));
         } else {
             currentView.setImageViewResource(R.id.appwidget_image, R.drawable.baseline_signal_wifi_connected_no_internet_4_24_black);
         }
