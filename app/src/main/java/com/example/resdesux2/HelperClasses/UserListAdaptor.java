@@ -44,9 +44,14 @@ public class UserListAdaptor extends ArrayAdapter<User> {
         textViewUserName.setText(currentUser.getUserName());
   
         // And the same for the score
-        int score = currentUser.getScore().getFrequencyScore();
+        User.Score score = currentUser.getScore();
+        double intensityScore = (float) score.getIntensityScore() / 6.0 * 100.0;
+        double frequencyScore = (float) score.getFrequencyScore()  / 6.0 * 100.0;
+        if (intensityScore > 100) intensityScore = 100;
+        if (frequencyScore > 100) frequencyScore = 100;
+
         TextView textViewUserScore = currentItemView.findViewById(R.id.textViewUserScore);
-        textViewUserScore.setText(String.format(Locale.getDefault(), "Score: %d", score));
+        textViewUserScore.setText(String.format(Locale.getDefault(), "Intensity: %.0f, Frequency: %.0f", intensityScore, frequencyScore));
 
         // Fill the image with the correct Dog
         ImageView doggoState = currentItemView.findViewById(R.id.imageIcon);

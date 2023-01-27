@@ -37,7 +37,6 @@ public class DashboardActivity extends BoundActivity {
 
     private void populateList(ArrayList<User> users) {
         // Create an ArrayAdapter to manage the data for the ListView
-        ArrayAdapter<User> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, users);
         UserListAdaptor userListAdaptor = new UserListAdaptor(this, android.R.layout.simple_list_item_1, users);
 
         // Find the ListView widget in the layout
