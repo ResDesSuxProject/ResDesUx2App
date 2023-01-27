@@ -64,6 +64,7 @@
         android:paddingBottom="20dp"
         android:paddingStart="60dp"
         android:paddingEnd="30dp"
+        android:src="@drawable/dagoe1_3"
         />
 
     <ImageView

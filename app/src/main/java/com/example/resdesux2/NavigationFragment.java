@@ -75,7 +75,7 @@ public class NavigationFragment extends Fragment {
         insightBtn.setOnClickListener((View v) -> optionClicked(Options.Insight));
 
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorSecondary, typedValue, true);
+        getContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimaryVariant, typedValue, true);
         int color = typedValue.data;
 
         switch (current) {
