@@ -3,6 +3,7 @@ package com.example.resdesux2.Communication;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.example.resdesux2.Models.ChangeListener;
 
@@ -20,6 +21,7 @@ public class MessageReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // Upon receiving each message from the wearable send it on to the listener
         String message = intent.getExtras().getString("message");
+        Log.v("MessageReceiver", message);
         listener.onChange(message);
     }
 }

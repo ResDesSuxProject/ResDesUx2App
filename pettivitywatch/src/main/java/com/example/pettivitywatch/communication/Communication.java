@@ -73,7 +73,7 @@ public class Communication implements HeartRateQueue {
                     heartRateQueue.clear();
                 }
             }
-            delay(15000);
+            delay(10000);
         }
     }
 
@@ -90,7 +90,7 @@ public class Communication implements HeartRateQueue {
                     .sendMessage(transcriptionNodeId, HEART_RATE_MESSAGE_PATH, data.getBytes());
 
             // Add callbacks when it succeeded or failed
-//            sendTask.addOnSuccessListener(integer -> Log.v(TAG, "added data to sending queue: " + data));
+            sendTask.addOnSuccessListener(integer -> Log.v(TAG, "added data to sending queue: " + data));
             sendTask.addOnFailureListener(error -> {
                 Log.e(TAG, "requestTranscription: Couldn't send message: " + error.getMessage() + "\n");
                 error.printStackTrace();
