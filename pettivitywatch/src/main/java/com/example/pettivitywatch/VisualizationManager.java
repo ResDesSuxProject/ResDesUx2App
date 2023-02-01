@@ -4,9 +4,9 @@ import com.example.pettivitywatch.models.User;
 
 public class VisualizationManager {
     public static final int[][] IMAGES = {
-            {R.drawable.dagoestaand1, R.drawable.dagoestaand2},
-            {R.drawable.dagoestaand3, R.drawable.dagoestaand4},
-            {R.drawable.dagoestaand5, R.drawable.dagoestaand6}
+            {R.drawable.dagoefoto1_1, R.drawable.dagoefoto2_1, R.drawable.dagoefoto3_1},
+            {R.drawable.dagoefoto1_2, R.drawable.dagoefoto2_2, R.drawable.dagoefoto3_2},
+            {R.drawable.dagoefoto1_3, R.drawable.dagoefoto2_3, R.drawable.dagoefoto3_3},
     };
     public static int[][] VIDEOS = {
             {R.drawable.dagoe1_1, R.drawable.dagoe2_1, R.drawable.dagoe3_1},
@@ -28,8 +28,8 @@ public class VisualizationManager {
     }
 
     public static int getImage(int intensity, int frequency) {
-        intensity = clamp(intensity, IMAGES.length - 1);
-        frequency = clamp(frequency, IMAGES[intensity].length - 1);
+        intensity = clamp(intensity/2, IMAGES.length - 1);
+        frequency = clamp(frequency/2, IMAGES[intensity].length - 1);
         return IMAGES[intensity][frequency];
     }
 
